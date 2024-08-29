@@ -1,0 +1,5 @@
+static/draco
+static/models/*
+!static/models/**/
+static/models/Duck/*
+!static/models/Duck/glTF-Binary/
