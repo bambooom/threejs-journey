@@ -114,7 +114,7 @@ const Page: FC = () => {
     renderer.render(scene, camera);
   }, [canvas.current]);
 
-  return <canvas className="webgl" ref={canvas}></canvas>;
+  return <canvas ref={canvas}></canvas>;
 };
 
 export default Page;
