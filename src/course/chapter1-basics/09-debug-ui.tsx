@@ -1,6 +1,6 @@
 import { type FC, useRef, useEffect } from 'react';
 import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import gsap from 'gsap';
 import GUI from 'lil-gui';
 
