@@ -5,6 +5,7 @@ const Page: FC = () => {
   const canvas = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
+    if (!canvas.current) return;
     // 4 basic elements:
     // - Scene
     // - Objects
@@ -51,7 +52,7 @@ const Page: FC = () => {
      * like renderer taking pictures of your scene
      */
     const renderer = new THREE.WebGLRenderer({
-      canvas: canvas.current!,
+      canvas: canvas.current,
     });
     renderer.setSize(sizes.width, sizes.height);
     renderer.render(scene, camera);
