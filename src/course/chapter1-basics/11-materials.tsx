@@ -24,27 +24,25 @@ const Page: FC = () => {
     const textureLoader = new THREE.TextureLoader();
 
     const doorColorTexture = textureLoader.load('/textures/door/color.jpg');
-    /* eslint-disable @typescript-eslint/no-unused-vars */
-    const doorAlphaTexture = textureLoader.load('/textures/door/alpha.jpg');
-    const doorHeightTexture = textureLoader.load('/textures/door/height.jpg');
-    const doorNormalTexture = textureLoader.load('/textures/door/normal.jpg');
-    const doorAmbientOcclusionTexture = textureLoader.load(
-      '/textures/door/ambientOcclusion.jpg'
-    );
-    const doorMetalnessTexture = textureLoader.load(
-      '/textures/door/metalness.jpg'
-    );
-    const doorRoughnessTexture = textureLoader.load(
-      '/textures/door/roughness.jpg'
-    );
+
+    // const doorAlphaTexture = textureLoader.load('/textures/door/alpha.jpg');
+    // const doorHeightTexture = textureLoader.load('/textures/door/height.jpg');
+    // const doorNormalTexture = textureLoader.load('/textures/door/normal.jpg');
+    // const doorAmbientOcclusionTexture = textureLoader.load(
+    //   '/textures/door/ambientOcclusion.jpg'
+    // );
+    // const doorMetalnessTexture = textureLoader.load(
+    //   '/textures/door/metalness.jpg'
+    // );
+    // const doorRoughnessTexture = textureLoader.load(
+    //   '/textures/door/roughness.jpg'
+    // );
 
     const matcapTexture = textureLoader.load('/textures/matcaps/8.png');
-    const gradientTexture = textureLoader.load('/textures/gradients/5.jpg');
+    // const gradientTexture = textureLoader.load('/textures/gradients/5.jpg');
 
     doorColorTexture.colorSpace = THREE.SRGBColorSpace;
     matcapTexture.colorSpace = THREE.SRGBColorSpace;
-
-    /* eslint-enable @typescript-eslint/no-unused-vars */
 
     /**
      * Objects
