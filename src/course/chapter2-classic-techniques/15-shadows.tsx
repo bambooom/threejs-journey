@@ -158,7 +158,6 @@ const Page: FC = () => {
     const controls = new OrbitControls(camera, canvas.current);
     controls.enableDamping = true;
 
-
     // Renderer
     const renderer = new THREE.WebGLRenderer({
       canvas: canvas.current,
