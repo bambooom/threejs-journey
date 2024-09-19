@@ -1,12 +1,21 @@
 // https://gist.github.com/brunosimon/120acda915e6629e3a4d497935b16bdf
 
+interface EventName {
+	original: string;
+	value: string;
+	namespace: string;
+}
+
 export default class EventEmitter {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  callbacks: any = {};
   constructor() {
     this.callbacks = {};
     this.callbacks.base = {};
   }
 
-  on(_names, callback) {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+  on(_names: string, callback: Function) {
     // Errors
     if (typeof _names === 'undefined' || _names === '') {
       console.warn('wrong names');
@@ -22,7 +31,7 @@ export default class EventEmitter {
     const names = this.resolveNames(_names);
 
     // Each name
-    names.forEach((_name) => {
+    names.forEach((_name: string) => {
       // Resolve name
       const name = this.resolveName(_name);
 
@@ -41,7 +50,7 @@ export default class EventEmitter {
     return this;
   }
 
-  off(_names) {
+  off(_names: string) {
     // Errors
     if (typeof _names === 'undefined' || _names === '') {
       console.warn('wrong name');
@@ -97,24 +106,26 @@ export default class EventEmitter {
     return this;
   }
 
-  trigger(_name, _args) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  trigger(_name: string, _args?: any[]) {
     // Errors
     if (typeof _name === 'undefined' || _name === '') {
       console.warn('wrong name');
       return false;
     }
 
-    let finalResult = null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let finalResult: any = null;
     let result = null;
 
     // Default args
     const args = !(_args instanceof Array) ? [] : _args;
 
     // Resolve names (should on have one event)
-    let name = this.resolveNames(_name);
+    const nameArray = this.resolveNames(_name);
 
     // Resolve name
-    name = this.resolveName(name[0]);
+    const name = this.resolveName(nameArray[0]);
 
     // Default namespace
     if (name.namespace === 'base') {
@@ -124,7 +135,8 @@ export default class EventEmitter {
           this.callbacks[namespace] instanceof Object &&
           this.callbacks[namespace][name.value] instanceof Array
         ) {
-          this.callbacks[namespace][name.value].forEach(function (callback) {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+          this.callbacks[namespace][name.value].forEach( (callback: Function) => {
             result = callback.apply(this, args);
 
             if (typeof finalResult === 'undefined') {
@@ -142,7 +154,8 @@ export default class EventEmitter {
         return this;
       }
 
-      this.callbacks[name.namespace][name.value].forEach(function (callback) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+      this.callbacks[name.namespace][name.value].forEach( (callback: Function) => {
         result = callback.apply(this, args);
 
         if (typeof finalResult === 'undefined') finalResult = result;
@@ -152,8 +165,8 @@ export default class EventEmitter {
     return finalResult;
   }
 
-  resolveNames(_names) {
-    let names = _names;
+  resolveNames(_names: string) {
+    let names: string | string[] = _names;
     names = names.replace(/[^a-zA-Z0-9 ,/.]/g, '');
     names = names.replace(/[,/]+/g, ' ');
     names = names.split(' ');
@@ -161,8 +174,8 @@ export default class EventEmitter {
     return names;
   }
 
-  resolveName(name) {
-    const newName = {};
+  resolveName(name: string) {
+    const newName: Partial<EventName> = {};
     const parts = name.split('.');
 
     newName.original = name;
@@ -174,6 +187,6 @@ export default class EventEmitter {
       newName.namespace = parts[1];
     }
 
-    return newName;
+    return newName as EventName;
   }
 }

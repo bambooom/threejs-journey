@@ -1,9 +1,22 @@
-import Experience from "./Experience/Experience";
+import { type FC, useRef, useEffect } from 'react';
+import Experience from './experience';
 
-const experience = new Experience(document.querySelector("canvas.webgl"));
+const Page: FC = () => {
+  // Canvas
+  const canvas = useRef<HTMLCanvasElement>(null);
 
-// when you are done, destroy everything
-// experience.destroy();
+  useEffect(() => {
+    if (!canvas.current) return;
+
+    new Experience(canvas.current);
+
+    // when you are done, destroy everything
+    // experience.destroy();
+  }, [canvas.current]);
+  return <canvas ref={canvas}></canvas>;
+}
+
+export default Page;
 
 
 // import * as THREE from 'three'

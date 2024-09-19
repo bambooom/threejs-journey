@@ -3,6 +3,9 @@ import EventEmitter from './EventEmitter'
 // width, height, pixel ratio
 
 export default class Sizes extends EventEmitter {
+  width: number;
+	height: number;
+	pixelRatio: number;
   constructor() {
     super()
 

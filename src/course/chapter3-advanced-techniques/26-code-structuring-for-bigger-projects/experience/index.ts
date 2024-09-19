@@ -1,22 +1,39 @@
 import * as THREE from 'three'
 
-import Sizes from "./Utils/Sizes"
-import Time from "./Utils/Time"
+import Sizes from "./utils/Sizes"
+import Time from "./utils/Time"
 import Camera from './Camera';
 import Renderer from './Renderer';
-import World from './World/World';
-import Resources from './Utils/Resources';
-import sources from './sources.js';
-import Debug from './Utils/Debug.js';
+import World from './world/World.js';
+import Resources from './utils/Resources';
+import sources from './sources';
+import Debug from './utils/Debug';
 
-let instance = null;
+declare global {
+	interface Window {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		experience: any;
+	}
+}
+
+let instance: Experience;
 
 export default class Experience {
+  debug?: Debug;
+	canvas?: HTMLElement;
+	sizes?: Sizes;
+	time?: Time;
+	scene?: THREE.Scene;
+	resources?: Resources;
+	camera?: Camera;
+	renderer?: Renderer;
+	world?: World;
+
   /**
    * Constructor for Experience class.
    * @param {HTMLCanvasElement} canvas - The canvas element to render to.
    */
-  constructor(canvas) {
+  constructor(canvas: HTMLElement | null = null) {
     // Global access from window
     // window.experience = this // can expose this to window, but not very good idea
     // window.experience = instance // if using singleton, need to ref instance if testing in window
@@ -25,10 +42,16 @@ export default class Experience {
       return instance; // return already existing instance
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     instance = this; // Singleton, only instanciate once
 
+    /**
+		 * Global reference to the experience, not recommended, but useful when debugging
+		 */
+		window.experience = this;
+
     // Options
-    this.canvas = canvas;
+    this.canvas = canvas!;
 
     // Setup
     this.debug = new Debug();
@@ -52,23 +75,23 @@ export default class Experience {
   }
 
   resize() {
-    this.camera.resize();
-    this.renderer.resize();
+    this.camera!.resize();
+    this.renderer!.resize();
   }
 
   update() {
-    this.camera.update();
-    this.world.update();
-    this.renderer.update();
+    this.camera!.update();
+    this.world!.update();
+    this.renderer!.update();
   }
 
   // complex project may need a destroy method for each class
   destroy() {
-    this.sizes.off('resize');
-    this.time.off('tick');
+    this.sizes!.off('resize');
+    this.time!.off('tick');
 
     // Traverse the whole scene
-    this.scene.traverse((child) => {
+    this.scene!.traverse((child) => {
       // Test if it's a mesh
       if (child instanceof THREE.Mesh) {
         child.geometry.dispose();
@@ -85,9 +108,9 @@ export default class Experience {
       }
     });
 
-    this.camera.controls.dispose();
-    this.renderer.instance.dispose();
+    this.camera!.controls?.dispose();
+    this.renderer!.instance?.dispose();
 
-    if (this.debug.active) this.debug.ui.destroy();
+    if (this.debug?.active) this.debug.ui!.destroy();
   }
 }

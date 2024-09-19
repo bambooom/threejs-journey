@@ -1,9 +1,18 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import Experience from "./Experience";
+import Experience from "./index";
+import Sizes from "./utils/Sizes";
 
 export default class Camera {
-  constructor(experience) {
+  experience: Experience;
+	canvas: HTMLElement;
+	sizes: Sizes;
+  scene: THREE.Scene;
+
+  instance?: THREE.PerspectiveCamera;
+	controls?: OrbitControls;
+
+  constructor() {
     // camera need to have access to canvas, sizes,
     // so need to access Experience class
     // one solution is global access from window if it's added to window, but not a good practice
@@ -15,9 +24,9 @@ export default class Camera {
 
     // third solution is using singleton
     this.experience = new Experience(); // get singleton instance
-    this.sizes = this.experience.sizes;
-    this.scene = this.experience.scene;
-    this.canvas = this.experience.canvas;
+    this.sizes = this.experience.sizes!;
+    this.scene = this.experience.scene!;
+    this.canvas = this.experience.canvas!;
 
     this.setInstance();
     this.setOrbitControls();
@@ -35,16 +44,16 @@ export default class Camera {
   }
 
   setOrbitControls() {
-    this.controls = new OrbitControls(this.instance, this.canvas);
+    this.controls = new OrbitControls(this.instance!, this.canvas);
     this.controls.enableDamping = true;
   }
 
   resize() {
-    this.instance.aspect = this.sizes.width / this.sizes.height;
-    this.instance.updateProjectionMatrix();
+    this.instance!.aspect = this.sizes.width / this.sizes.height;
+    this.instance!.updateProjectionMatrix();
   }
 
   update() {
-    this.controls.update();
+    this.controls!.update();
   }
 }

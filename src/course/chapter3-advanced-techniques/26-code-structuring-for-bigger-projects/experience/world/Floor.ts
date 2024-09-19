@@ -1,11 +1,21 @@
 import * as THREE from "three";
-import Experience from "../Experience";
+import Experience from "../index";
+import Resources from "../utils/Resources";
 
 export default class Floor {
+  experience: Experience;
+	scene: THREE.Scene;
+	resources: Resources;
+	geometry?: THREE.BufferGeometry;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	textures?: any = {};
+	material?: THREE.Material;
+  mesh?: THREE.Mesh;
+
   constructor() {
     this.experience = new Experience();
-    this.scene = this.experience.scene;
-    this.resources = this.experience.resources;
+    this.scene = this.experience.scene!;
+    this.resources = this.experience.resources!;
 
     this.setGeometry();
     this.setTextures();

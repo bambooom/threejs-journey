@@ -1,6 +1,10 @@
 import EventEmitter from "./EventEmitter";
 
 export default class Time extends EventEmitter {
+  start: number;
+	current: number;
+	elapsed: number;
+	delta: number;
   constructor() {
     super();
 
@@ -10,6 +14,11 @@ export default class Time extends EventEmitter {
     this.elapsed = 0
     this.delta = 16 // 60fps, arround 16.6ms
 
+    /**
+		 * why do we need to use requestAnimationFrame here?
+		 *
+		 * to wait for the next frame before starting the clock i.e. tick method
+		 */
     // wait for 1 frame, since the first frame delta is 0
     window.requestAnimationFrame(() => {
       this.tick();
