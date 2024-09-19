@@ -361,7 +361,7 @@ const Page: FC = () => {
     tick();
   }, [canvas.current]);
 
-  return <canvas ref={canvas}></canvas>;
+  return <canvas className="webgl" ref={canvas}></canvas>;
 };
 
 export default Page;
