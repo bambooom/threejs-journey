@@ -118,20 +118,19 @@ const Page: FC = () => {
       width: window.innerWidth,
       height: window.innerHeight,
     };
-
-    window.addEventListener('resize', () => {
+    const onResize = () => {
       // Update sizes
       sizes.width = window.innerWidth;
       sizes.height = window.innerHeight;
-
       // Update camera
       camera.aspect = sizes.width / sizes.height;
       camera.updateProjectionMatrix();
-
       // Update renderer
       renderer.setSize(sizes.width, sizes.height);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    });
+    };
+
+    window.addEventListener('resize', onResize);
 
     /**
      * Camera
@@ -170,7 +169,7 @@ const Page: FC = () => {
      */
     let scrollY = window.scrollY; // retrive the scroll value
     let currentSection = 0;
-    window.addEventListener('scroll', () => {
+    const onScroll = () => {
       scrollY = window.scrollY;
       const newSection = Math.round(scrollY / sizes.height);
 
@@ -188,7 +187,8 @@ const Page: FC = () => {
           }
         );
       }
-    });
+    };
+    window.addEventListener('scroll', onScroll);
 
     /**
      * Cursor
@@ -197,11 +197,12 @@ const Page: FC = () => {
       x: 0,
       y: 0,
     };
-    window.addEventListener('mousemove', (event) => {
+    const onMouseMove = (event: MouseEvent) => {
       // make x and y between -0.5 and 0.5
       cursor.x = event.clientX / sizes.width - 0.5;
       cursor.y = event.clientY / sizes.height - 0.5;
-    });
+    };
+    window.addEventListener('mousemove', onMouseMove);
 
     /**
      * Animate
@@ -240,9 +241,34 @@ const Page: FC = () => {
     };
 
     tick();
+
+    return () => {
+      window.removeEventListener('resize', onResize);
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('mousemove', onMouseMove);
+      scene.clear();
+      material.dispose();
+      particlesMaterial.dispose();
+      particlesGeometry.dispose();
+      renderer.dispose();
+      gui.destroy();
+    };
   }, [canvas.current]);
 
-  return <canvas className="webgl" ref={canvas}></canvas>;
+  return (
+    <>
+      <canvas className="webgl" ref={canvas}></canvas>
+      <section className="section">
+        <h1>My Portfolio</h1>
+      </section>
+      <section className="section">
+        <h2>My projects</h2>
+      </section>
+      <section className="section">
+        <h2>Contact me</h2>
+      </section>
+    </>
+  );
 };
 
 export default Page;

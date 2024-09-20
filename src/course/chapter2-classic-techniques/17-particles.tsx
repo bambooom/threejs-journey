@@ -84,19 +84,19 @@ const Page: FC = () => {
       height: window.innerHeight,
     };
 
-    window.addEventListener('resize', () => {
+    const onResize = () => {
       // Update sizes
       sizes.width = window.innerWidth;
       sizes.height = window.innerHeight;
-
       // Update camera
       camera.aspect = sizes.width / sizes.height;
       camera.updateProjectionMatrix();
-
       // Update renderer
       renderer.setSize(sizes.width, sizes.height);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    });
+    };
+
+    window.addEventListener('resize', onResize);
 
     /**
      * Camera
@@ -158,6 +158,14 @@ const Page: FC = () => {
     };
 
     tick();
+
+    return () => {
+      window.removeEventListener('resize', onResize);
+      scene.clear();
+      particlesGeometry.dispose();
+      particlesMaterial.dispose();
+      renderer.dispose();
+    };
   }, [canvas.current]);
 
   return <canvas className="webgl" ref={canvas}></canvas>;

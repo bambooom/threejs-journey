@@ -325,23 +325,23 @@ const Page: FC = () => {
 
     // Sizes
     const sizes = {
-      width: 800,
-      height: 600,
+      width: window.innerWidth,
+      height: window.innerHeight,
     };
 
-    window.addEventListener('resize', () => {
+    const onResize = () => {
       // Update sizes
       sizes.width = window.innerWidth;
       sizes.height = window.innerHeight;
-
       // Update camera
       camera.aspect = sizes.width / sizes.height;
       camera.updateProjectionMatrix();
-
       // Update renderer
       renderer.setSize(sizes.width, sizes.height);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    });
+    };
+
+    window.addEventListener('resize', onResize);
 
     /**
      * Camera
@@ -482,6 +482,17 @@ const Page: FC = () => {
     };
 
     tick();
+
+    return () => {
+      window.removeEventListener('resize', onResize);
+      scene.clear();
+      bushGeometry.dispose();
+      bushMaterial.dispose();
+      graveGeometry.dispose();
+      graveMaterial.dispose();
+      renderer.dispose();
+      gui.destroy();
+    };
   }, [canvas.current]);
 
   return <canvas className="webgl" ref={canvas}></canvas>;

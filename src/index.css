@@ -18,11 +18,11 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-html,
+/* if no controls, can scroll and see beyound, so hidden scroll */
+/* html,
 body {
   overflow: hidden;
-  /* if no controls, can scroll and see beyound, so hidden scroll */
-}
+} */
 
 body {
   margin: 0;
