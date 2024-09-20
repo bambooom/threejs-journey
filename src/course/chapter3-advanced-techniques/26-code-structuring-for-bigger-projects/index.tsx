@@ -8,10 +8,12 @@ const Page: FC = () => {
   useEffect(() => {
     if (!canvas.current) return;
 
-    new Experience(canvas.current);
+    const experience = new Experience(canvas.current);
 
     // when you are done, destroy everything
-    // experience.destroy();
+    return () => {
+      experience.destroy();
+    }
   }, [canvas.current]);
   return <canvas ref={canvas}></canvas>;
 }
