@@ -1,10 +1,11 @@
-import { type FC, useRef, useEffect } from 'react';
+import { type FC, useRef, useEffect, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import GUI from 'lil-gui';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 
 const Page: FC = () => {
+  const [isEnvironmentMapLoaded, setIsEnvironmentMapLoaded] = useState(false);
   // Canvas
   const canvas = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
@@ -193,6 +194,8 @@ const Page: FC = () => {
       // set
       scene.background = environmentMap;
       scene.environment = environmentMap;
+      material.needsUpdate = true;
+      setIsEnvironmentMapLoaded(true);
     });
 
     /**
@@ -202,8 +205,7 @@ const Page: FC = () => {
       width: window.innerWidth,
       height: window.innerHeight,
     };
-
-    window.addEventListener('resize', () => {
+    const onResize = () => {
       // Update sizes
       sizes.width = window.innerWidth;
       sizes.height = window.innerHeight;
@@ -213,7 +215,9 @@ const Page: FC = () => {
       // Update renderer
       renderer.setSize(sizes.width, sizes.height);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    });
+    };
+
+    window.addEventListener('resize', onResize);
 
     /**
      * Camera
@@ -265,7 +269,18 @@ const Page: FC = () => {
       window.requestAnimationFrame(tick);
     };
 
-    tick();
+    if (isEnvironmentMapLoaded) {
+      // 不检查 environment map 是否 loaded 的话，会报错： WebGL: INVALID_OPERATION: uniformMatrix4fv: location is not from the associated program
+      tick();
+    }
+
+    return () => {
+      window.removeEventListener('resize', onResize);
+      scene.clear();
+      material.dispose();
+      renderer.dispose();
+      gui.destroy();
+    }
   }, [canvas.current]);
 
   return <canvas className="webgl" ref={canvas}></canvas>;

@@ -1,10 +1,11 @@
-import { type FC, useRef, useEffect } from 'react';
+import { type FC, useRef, useEffect, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
 
 const Page: FC = () => {
+  const [fontLoaded, setFontLoaded] = useState(false);
   // Canvas
   const canvas = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
@@ -80,6 +81,8 @@ const Page: FC = () => {
 
         scene.add(donut);
       }
+
+      setFontLoaded(true);
     });
 
     /**
@@ -100,7 +103,7 @@ const Page: FC = () => {
       height: window.innerHeight,
     };
 
-    window.addEventListener('resize', () => {
+    const onResize = () => {
       // Update sizes
       sizes.width = window.innerWidth;
       sizes.height = window.innerHeight;
@@ -110,7 +113,9 @@ const Page: FC = () => {
       // Update renderer
       renderer.setSize(sizes.width, sizes.height);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    });
+    };
+
+    window.addEventListener('resize', onResize);
 
     // Camera
     const camera = new THREE.PerspectiveCamera(
@@ -149,7 +154,16 @@ const Page: FC = () => {
       window.requestAnimationFrame(tick);
     };
 
-    tick();
+    if (fontLoaded) {
+      // 检查 loaded 是为了防止出现报错：WebGL: INVALID_OPERATION: uniformMatrix4fv: location is not from the associated program
+      tick();
+    }
+
+    return () => {
+      window.removeEventListener('resize', onResize);
+      scene.clear();
+      renderer.dispose();
+    };
   }, [canvas.current]);
 
   return <canvas className="webgl" ref={canvas}></canvas>;

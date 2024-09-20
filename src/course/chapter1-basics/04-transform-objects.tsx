@@ -112,6 +112,13 @@ const Page: FC = () => {
     });
     renderer.setSize(sizes.width, sizes.height);
     renderer.render(scene, camera);
+
+    return () => {
+      scene.clear();
+      geometry.dispose();
+      material.dispose();
+      renderer.dispose();
+    };
   }, [canvas.current]);
 
   return <canvas ref={canvas}></canvas>;

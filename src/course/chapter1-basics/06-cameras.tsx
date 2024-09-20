@@ -21,11 +21,12 @@ const Page: FC = () => {
       x: 0,
       y: 0,
     };
-    window.addEventListener('mousemove', (event) => {
+    const onMouseMove = (event: MouseEvent) => {
       // x 和 y 会在 -0.5 ~ 0.5 之间，这样会有 negative positive values，会更容易辨别 left right etc
       cursor.x = event.clientX / sizes.width - 0.5;
       cursor.y = -event.clientY / sizes.height + 0.5;
-    });
+    }
+    window.addEventListener('mousemove', onMouseMove);
 
     // Scene
     const scene = new THREE.Scene();
@@ -103,6 +104,12 @@ const Page: FC = () => {
     };
 
     tick();
+
+    return () => {
+      window.removeEventListener('mousemove', onMouseMove);
+      scene.clear();
+      renderer.dispose();
+    }
   }, [canvas.current]);
 
   return <canvas ref={canvas}></canvas>;

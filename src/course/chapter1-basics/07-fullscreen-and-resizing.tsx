@@ -27,7 +27,7 @@ const Page: FC = () => {
       height: window.innerHeight,
     };
 
-    window.addEventListener('resize', () => {
+    const onResize = () => {
       sizes.width = window.innerWidth;
       sizes.height = window.innerHeight;
 
@@ -41,16 +41,20 @@ const Page: FC = () => {
 
       // limit pixel ratio to 2 to prevent too much renders on high pixel ratio devices
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    });
+    }
 
-    // double click to fullscreen
-    window.addEventListener('dblclick', () => {
+    window.addEventListener('resize', onResize);
+
+    const onDoubleClick = () => {
+      // double click to fullscreen
       if (!document.fullscreenElement) {
         canvas.current!.requestFullscreen();
       } else {
         document.exitFullscreen();
       }
-    });
+    }
+
+    window.addEventListener('dblclick', onDoubleClick);
 
     /**
      * Camera
@@ -98,6 +102,14 @@ const Page: FC = () => {
 
     tick();
 
+    return () => {
+      window.removeEventListener('resize', onResize);
+      window.removeEventListener('dblclick', onDoubleClick);
+      scene.clear();
+      geometry.dispose();
+      material.dispose();
+      renderer.dispose();
+    }
   }, [canvas.current]);
 
   return <canvas className="webgl" ref={canvas}></canvas>;

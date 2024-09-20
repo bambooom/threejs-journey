@@ -54,7 +54,7 @@ const Page: FC = () => {
       height: window.innerHeight,
     };
 
-    window.addEventListener('resize', () => {
+    const onResize = () => {
       // Update sizes
       sizes.width = window.innerWidth;
       sizes.height = window.innerHeight;
@@ -64,7 +64,9 @@ const Page: FC = () => {
       // Update renderer
       renderer.setSize(sizes.width, sizes.height);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    });
+    }
+
+    window.addEventListener('resize', onResize);
 
     // Camera
     const camera = new THREE.PerspectiveCamera(
@@ -101,6 +103,14 @@ const Page: FC = () => {
     };
 
     tick();
+
+    return () => {
+      window.removeEventListener('resize', onResize);
+      scene.clear();
+      geometry.dispose();
+      material.dispose();
+      renderer.dispose();
+    }
   }, [canvas.current]);
 
   return <canvas className="webgl" ref={canvas}></canvas>;

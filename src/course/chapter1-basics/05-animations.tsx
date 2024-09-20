@@ -90,6 +90,13 @@ const Page: FC = () => {
       window.requestAnimationFrame(tick);
     };
     tick();
+
+    return () => {
+      scene.clear();
+      geometry.dispose();
+      material.dispose();
+      renderer.dispose();
+    }
   }, [canvas.current]);
 
   return <canvas ref={canvas}></canvas>;

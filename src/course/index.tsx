@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const Page: FC = () => {
   return (
-    <>
+    <div className='index-page'>
       <div>Chapter 1: Basics</div>
       <ul>
         <li>
@@ -99,7 +99,7 @@ const Page: FC = () => {
           <Link to="/chapter3-advanced-techniques/26-code-structuring-for-bigger-projects">26 Code Structuring for Bigger Projects</Link>
         </li>
       </ul>
-    </>
+    </div>
   );
 };
 

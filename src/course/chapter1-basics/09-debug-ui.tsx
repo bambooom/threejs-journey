@@ -21,12 +21,12 @@ const Page: FC = () => {
     // gui.close()
 
     // gui.hide() // default to not showing it
-
-    window.addEventListener('keydown', (event) => {
+    const onKeydown = (event: KeyboardEvent) => {
       if (event.key === 'h') {
         gui.show(gui._hidden); // toggle the debug UI
       }
-    });
+    }
+    window.addEventListener('keydown', onKeydown);
 
     // gui.add(...), parameters: the object, the property of that object
     // can only tweak object and its properties
@@ -116,8 +116,7 @@ const Page: FC = () => {
       width: window.innerWidth,
       height: window.innerHeight,
     };
-
-    window.addEventListener('resize', () => {
+    const onResize = () => {
       // Update sizes
       sizes.width = window.innerWidth;
       sizes.height = window.innerHeight;
@@ -127,7 +126,9 @@ const Page: FC = () => {
       // Update renderer
       renderer.setSize(sizes.width, sizes.height);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    });
+    };
+
+    window.addEventListener('resize', onResize);
 
     /**
      * Camera
@@ -171,6 +172,16 @@ const Page: FC = () => {
     };
 
     tick();
+
+    return () => {
+      window.removeEventListener('keydown', onKeydown)
+      window.removeEventListener('resize', onResize);
+      scene.clear();
+      geometry.dispose();
+      material.dispose();
+      renderer.dispose();
+      gui.destroy();
+    }
   }, [canvas.current]);
 
   return <canvas className="webgl" ref={canvas}></canvas>;
