@@ -1,4 +1,4 @@
-import { type FC, useRef, useEffect } from 'react';
+import { type FC, useRef, useEffect, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
@@ -6,6 +6,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 
 const Page: FC = () => {
+  const [modelLoaded, setModelLoaded] = useState(false);
   // Canvas
   const canvas = useRef<HTMLCanvasElement>(null);
 
@@ -65,32 +66,34 @@ const Page: FC = () => {
       height: window.innerHeight,
     };
 
-    window.addEventListener('resize', () => {
+    const onResize = () => {
       // Update sizes
       sizes.width = window.innerWidth;
       sizes.height = window.innerHeight;
-
       // Update camera
       camera.aspect = sizes.width / sizes.height;
       camera.updateProjectionMatrix();
-
       // Update renderer
       renderer.setSize(sizes.width, sizes.height);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    });
+    };
+
+    window.addEventListener('resize', onResize);
 
     /**
      * Mouse / Cursor
      */
     const mouse = new THREE.Vector2();
-    // mouse x, y should be between -1 and 1
-    window.addEventListener('mousemove', (event) => {
+    const onMouseMove = (event: MouseEvent) => {
       mouse.x = (event.clientX / sizes.width) * 2 - 1;
       mouse.y = -(event.clientY / sizes.height) * 2 + 1;
 
       // console.log(mouse);
-    });
-    window.addEventListener('click', () => {
+    };
+    // mouse x, y should be between -1 and 1
+    window.addEventListener('mousemove', onMouseMove);
+
+    const onClick = () => {
       if (currentIntersect) {
         // console.log('click on a sphere')
         if (currentIntersect.object === object1) {
@@ -101,7 +104,8 @@ const Page: FC = () => {
           console.log('click on object3');
         }
       }
-    });
+    }
+    window.addEventListener('click', onClick);
 
     /**
      * Camera
@@ -138,6 +142,7 @@ const Page: FC = () => {
       model = gltf.scene;
       model.position.y = -1.2;
       scene.add(model);
+      setModelLoaded(true);
     });
 
     /**
@@ -227,8 +232,18 @@ const Page: FC = () => {
       window.requestAnimationFrame(tick);
     };
 
-    tick();
-  }, [canvas.current]);
+    if (modelLoaded) {
+      tick();
+    }
+
+    return () => {
+      window.removeEventListener('resize', onResize);
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('click', onClick);
+      scene.clear();
+      renderer.dispose();
+    };
+  }, [canvas.current, modelLoaded]);
 
   return <canvas className="webgl" ref={canvas}></canvas>;
 };

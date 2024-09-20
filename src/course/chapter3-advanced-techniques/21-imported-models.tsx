@@ -1,4 +1,4 @@
-import { type FC, useRef, useEffect } from 'react';
+import { type FC, useRef, useEffect, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
@@ -6,6 +6,7 @@ import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 // import GUI from 'lil-gui';
 
 const Page: FC = () => {
+  const [modelLoaded, setModelLoaded] = useState(false);
   // Canvas
   const canvas = useRef<HTMLCanvasElement>(null);
 
@@ -67,6 +68,8 @@ const Page: FC = () => {
       action.play(); // need to update mixer in each frame under animation function
       gltf.scene.scale.set(0.025, 0.025, 0.025);
       scene.add(gltf.scene);
+
+      setModelLoaded(true);
     });
 
     /**
@@ -109,19 +112,19 @@ const Page: FC = () => {
       height: window.innerHeight,
     };
 
-    window.addEventListener('resize', () => {
+    const onResize = () => {
       // Update sizes
       sizes.width = window.innerWidth;
       sizes.height = window.innerHeight;
-
       // Update camera
       camera.aspect = sizes.width / sizes.height;
       camera.updateProjectionMatrix();
-
       // Update renderer
       renderer.setSize(sizes.width, sizes.height);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    });
+    };
+
+    window.addEventListener('resize', onResize);
 
     /**
      * Camera
@@ -178,8 +181,16 @@ const Page: FC = () => {
       window.requestAnimationFrame(tick);
     };
 
-    tick();
-  }, [canvas.current]);
+    if (modelLoaded) {
+      tick();
+    }
+
+    return () => {
+      window.removeEventListener('resize', onResize);
+      scene.clear();
+      renderer.dispose();
+    };
+  }, [canvas.current, modelLoaded]);
 
   return <canvas className="webgl" ref={canvas}></canvas>;
 };
