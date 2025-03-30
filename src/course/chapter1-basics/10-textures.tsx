@@ -80,8 +80,9 @@ const Page: FC = () => {
     // repeat: 2D vector
     // colorTexture.repeat.x = 2
     // colorTexture.repeat.y = 3
-    // colorTexture.wrapS = THREE.RepeatWrapping
-    // colorTexture.wrapT = THREE.RepeatWrapping
+    // texture not being set up to repeat itself by default. To change that, you have to update the wrapS and wrapT properties using the THREE.RepeatWrapping constant.
+    // colorTexture.wrapS = THREE.RepeatWrapping // for x-axis
+    // colorTexture.wrapT = THREE.RepeatWrapping // for y-axis
     // // so you get 6 doors on one side
 
     // // you can have offset
@@ -193,7 +194,7 @@ const Page: FC = () => {
       geometry.dispose();
       material.dispose();
       renderer.dispose();
-    }
+    };
   }, [canvas.current]);
 
   return <canvas className="webgl" ref={canvas}></canvas>;
