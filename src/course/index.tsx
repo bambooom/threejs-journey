@@ -99,6 +99,12 @@ const Page: FC = () => {
           <Link to="/chapter3-advanced-techniques/26-code-structuring-for-bigger-projects">26 Code Structuring for Bigger Projects</Link>
         </li>
       </ul>
+      <div>Chapter 4: Shaders</div>
+      <ul>
+        <li>
+          <Link to="/chapter4-shaders/27-shaders">27 Custom Shaders</Link>
+        </li>
+      </ul>
     </div>
   );
 };
