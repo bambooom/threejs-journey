@@ -30,6 +30,7 @@ const Page: FC = () => {
       // insider here is the glsl code
       vertexShader: testVertexShader,
       fragmentShader: testFragmentShader,
+      transparent: true, // if we wan to set alpha below 1.0 in gl_FragColor
       // wireframe: true,
       // side: THREE.DoubleSide,
       //  ⬆️ still effective
