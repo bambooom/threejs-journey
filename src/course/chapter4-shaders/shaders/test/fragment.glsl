@@ -26,4 +26,9 @@ void main()
     vec4 textureColor = texture2D(uTexture, vUv);
     textureColor.rgb *= vElevation * 2.0 + 0.5; // simulate shadows with color variation
     gl_FragColor = textureColor; // use the texture color
+
+
+    /**
+    * DEBUG Tip: use gl_FragColor to test values on the screen
+    */
 }
