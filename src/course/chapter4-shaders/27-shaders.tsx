@@ -23,6 +23,16 @@ const Page: FC = () => {
     // Geometry
     const geometry = new THREE.PlaneGeometry(1, 1, 32, 32);
 
+    // create a aRandom attribute
+    const count = geometry.attributes.position.count; // how many vertices, not the length of the array, but exact count
+    const randoms = new Float32Array(count);
+    for (let i = 0; i < count; i++) {
+      randoms[i] = Math.random();
+    }
+    geometry.setAttribute('aRandom', new THREE.BufferAttribute(randoms, 1)); // just one random value per vertex
+    // if we check the geometry.attributes now, it has the aRandom property
+
+
     // Material
     // const material = new THREE.MeshBasicMaterial();
     // we use RawShaderMaterial to create custom shader

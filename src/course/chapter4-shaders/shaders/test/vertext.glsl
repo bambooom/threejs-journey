@@ -9,6 +9,9 @@ uniform mat4 viewMatrix
 uniform mat4 modelMatrix;
 
 attribute vec3 position;
+attribute float aRandom; // read the attribute we create
+
+varying float vRandom;
 
 // functions
 float loremIpsum() {
@@ -56,7 +59,11 @@ void main()
 
     // separate the above one line:
     vec4 modelPosition = modelMatrix * vec4(position, 1.0);
-    modelPosition.z += sin(modelPosition.x * 10.0) * 0.1; // change z accordint to x, we can see a wave
+    // modelPosition.z += sin(modelPosition.x * 10.0) * 0.1; // change z accordint to x, we can see a wave
+    modelPosition.z += aRandom * 0.1;
+
+    vRandom = aRandom; // just assign it to vRandom, and use vRandom in fragment
+
     vec4 viewPosition = viewMatrix * modelPosition;
     vec4 projectedPosition = projectionMatrix * viewPosition;
 
