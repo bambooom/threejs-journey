@@ -12,6 +12,7 @@ attribute vec3 position;
 attribute vec2 uv; // it's already defined in the attributes of the geometry
 
 varying vec2 vUv;
+varying float vElevation;
 
 // attribute float aRandom; // read the attribute we create
 // varying float vRandom;
@@ -70,10 +71,16 @@ void main()
 
     // vRandom = aRandom; // just assign it to vRandom, and use vRandom in fragment
 
-    // now we can change uFrequency value in javascript to see changes in the shaders
-    modelPosition.z += sin(modelPosition.x * uFrequency.x + uTime) * 0.1;
-    modelPosition.z += sin(modelPosition.y * uFrequency.y + uTime) * 0.1;
-    // add uTime like offset to make the plane wave like there is wind
+    // // now we can change uFrequency value in javascript to see changes in the shaders
+    // modelPosition.z += sin(modelPosition.x * uFrequency.x + uTime) * 0.1;
+    // modelPosition.z += sin(modelPosition.y * uFrequency.y + uTime) * 0.1;
+    // // add uTime like offset to make the plane wave like there is wind
+
+    // store the wind elevation
+    float elevation = sin(modelPosition.x * uFrequency.x + uTime) * 0.1;
+    elevation += sin(modelPosition.y * uFrequency.y + uTime) * 0.1;
+
+    modelPosition.z += elevation;
 
     vec4 viewPosition = viewMatrix * modelPosition;
     vec4 projectedPosition = projectionMatrix * viewPosition;
@@ -81,4 +88,6 @@ void main()
     gl_Position = projectedPosition;
 
     vUv = uv; // assign to varying, send to fragment
+    // send the wind elevation to fragment
+    vElevation = elevation;
 }
