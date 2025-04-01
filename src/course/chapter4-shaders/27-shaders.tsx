@@ -18,6 +18,12 @@ const Page: FC = () => {
     const scene = new THREE.Scene();
 
     /**
+    * Textures
+    */
+    const textureLoader = new THREE.TextureLoader();
+    const flagTexture = textureLoader.load('/textures/flag-french.jpg');
+
+    /**
      * Test mesh
      */
     // Geometry
@@ -49,7 +55,8 @@ const Page: FC = () => {
         uFrequency: { value: new THREE.Vector2(10, 5) },
         uTime: { value: 0 },
         uColor: { value: new THREE.Color('orange') },
-      }
+        uTexture: { value: flagTexture },
+      },
     });
 
     gui.add(material.uniforms.uFrequency.value, 'x').min(0).max(20).step(0.01).name('frequencyX');

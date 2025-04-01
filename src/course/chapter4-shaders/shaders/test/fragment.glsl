@@ -10,11 +10,18 @@ precision mediump float;
 // varying float vRandom; // get data from vertext
 
 uniform vec3 uColor; // THREE.Color is vec3
+uniform sampler2D uTexture; // get flagTexture
+
+varying vec2 vUv;
 
 void main()
 {
     // vec4(r,g,b,a), each property goes from 0.0 to 1.0
     // gl_FragColor = vec4(0.5, vRandom, 0.0, 1.0);
 
-    gl_FragColor = vec4(uColor, 1.0);
+    // gl_FragColor = vec4(uColor, 1.0);
+
+    // map the uv coordinates
+    vec4 textureColor = texture2D(uTexture, vUv);
+    gl_FragColor = textureColor; // use the texture color
 }

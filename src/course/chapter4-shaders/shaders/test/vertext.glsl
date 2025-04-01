@@ -9,6 +9,10 @@ uniform mat4 viewMatrix
 uniform mat4 modelMatrix;
 
 attribute vec3 position;
+attribute vec2 uv; // it's already defined in the attributes of the geometry
+
+varying vec2 vUv;
+
 // attribute float aRandom; // read the attribute we create
 // varying float vRandom;
 
@@ -75,4 +79,6 @@ void main()
     vec4 projectedPosition = projectionMatrix * viewPosition;
 
     gl_Position = projectedPosition;
+
+    vUv = uv; // assign to varying, send to fragment
 }
