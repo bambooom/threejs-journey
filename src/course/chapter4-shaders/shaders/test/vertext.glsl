@@ -9,9 +9,11 @@ uniform mat4 viewMatrix
 uniform mat4 modelMatrix;
 
 attribute vec3 position;
-attribute float aRandom; // read the attribute we create
+// attribute float aRandom; // read the attribute we create
+// varying float vRandom;
 
-varying float vRandom;
+attribute vec2 uFrequency; // read the attribute we set in uniforms
+attribute float uTime;
 
 // functions
 float loremIpsum() {
@@ -60,9 +62,14 @@ void main()
     // separate the above one line:
     vec4 modelPosition = modelMatrix * vec4(position, 1.0);
     // modelPosition.z += sin(modelPosition.x * 10.0) * 0.1; // change z accordint to x, we can see a wave
-    modelPosition.z += aRandom * 0.1;
+    // modelPosition.z += aRandom * 0.1;
 
-    vRandom = aRandom; // just assign it to vRandom, and use vRandom in fragment
+    // vRandom = aRandom; // just assign it to vRandom, and use vRandom in fragment
+
+    // now we can change uFrequency value in javascript to see changes in the shaders
+    modelPosition.z += sin(modelPosition.x * uFrequency.x + uTime) * 0.1;
+    modelPosition.z += sin(modelPosition.y * uFrequency.y + uTime) * 0.1;
+    // add uTime like offset to make the plane wave like there is wind
 
     vec4 viewPosition = viewMatrix * modelPosition;
     vec4 projectedPosition = projectionMatrix * viewPosition;

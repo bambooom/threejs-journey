@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import testVertexShader from './shaders/test/vertex.glsl';
 import testFragmentShader from './shaders/test/fragment.glsl';
-// import GUI from 'lil-gui';
+import GUI from 'lil-gui';
 
 const Page: FC = () => {
   // Canvas
@@ -12,7 +12,7 @@ const Page: FC = () => {
   useEffect(() => {
     if (!canvas.current) return;
     // Debug
-    // const gui = new GUI();
+    const gui = new GUI();
 
     // Scene
     const scene = new THREE.Scene();
@@ -40,14 +40,24 @@ const Page: FC = () => {
       // insider here is the glsl code
       vertexShader: testVertexShader,
       fragmentShader: testFragmentShader,
-      transparent: true, // if we wan to set alpha below 1.0 in gl_FragColor
+      // transparent: true, // if we wan to set alpha below 1.0 in gl_FragColor
       // wireframe: true,
       // side: THREE.DoubleSide,
       //  ⬆️ still effective
+
+      uniforms: {
+        uFrequency: { value: new THREE.Vector2(10, 5) },
+        uTime: { value: 0 },
+        uColor: { value: new THREE.Color('orange') },
+      }
     });
+
+    gui.add(material.uniforms.uFrequency.value, 'x').min(0).max(20).step(0.01).name('frequencyX');
+    gui.add(material.uniforms.uFrequency.value, 'y').min(0).max(20).step(0.01).name('frequencyY');
 
     // Mesh
     const mesh = new THREE.Mesh(geometry, material);
+    mesh.scale.y = 2 / 3; // make it wider like a flag size
     scene.add(mesh);
 
     /**
@@ -101,6 +111,9 @@ const Page: FC = () => {
 
     const tick = () => {
       const elapsedTime = clock.getElapsedTime();
+
+      // update material, uTime
+      material.uniforms.uTime.value = elapsedTime;
 
       // Update controls
       controls.update();
