@@ -2,14 +2,14 @@
 // tyoed language
 
 // transform the coordinates into the final clip space coordinates
-uniform mat4 projectionMatrix;
+// uniform mat4 projectionMatrix;
 // apply transformations relative to the camera(position, rotation, field of view, near, far)
-uniform mat4 viewMatrix
+// uniform mat4 viewMatrix;
 // apply transformations relative to the Mesh(position, rotation, scale
-uniform mat4 modelMatrix;
+// uniform mat4 modelMatrix;
 
-attribute vec3 position;
-attribute vec2 uv; // it's already defined in the attributes of the geometry
+// attribute vec3 position;
+// attribute vec2 uv; // it's already defined in the attributes of the geometry
 
 varying vec2 vUv;
 varying float vElevation;
@@ -17,8 +17,8 @@ varying float vElevation;
 // attribute float aRandom; // read the attribute we create
 // varying float vRandom;
 
-attribute vec2 uFrequency; // read the attribute we set in uniforms
-attribute float uTime;
+uniform vec2 uFrequency; // read the attribute we set in uniforms
+uniform float uTime;
 
 // functions
 float loremIpsum() {
@@ -53,8 +53,8 @@ void main()
     vec2 bar2 = foo.xy; // bar2 will be (x,y), order matters
 
     // vec3, xyzw, rgba
-    vec4 foo4 = vec3(1.0, 2.0, 3.0, 4.0);
-    float bar = foo4.w; // 4th value. same as foo4.a
+    vec4 foo4 = vec4(1.0, 2.0, 3.0, 4.0);
+    float bar3 = foo4.w; // 4th value. same as foo4.a
 
     // use function
     float result = loremIpsum();

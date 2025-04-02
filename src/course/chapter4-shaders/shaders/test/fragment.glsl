@@ -24,8 +24,9 @@ void main()
 
     // map the uv coordinates
     vec4 textureColor = texture2D(uTexture, vUv);
-    textureColor.rgb *= vElevation * 2.0 + 0.5; // simulate shadows with color variation
+    textureColor.rgb *= vElevation * 2.0 + 0.65; // simulate shadows with color variation
     gl_FragColor = textureColor; // use the texture color
+    // gl_FragColor = vec4(vUv, 1.0, 1.0)
 
 
     /**

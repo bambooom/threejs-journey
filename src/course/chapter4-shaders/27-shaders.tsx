@@ -18,8 +18,8 @@ const Page: FC = () => {
     const scene = new THREE.Scene();
 
     /**
-    * Textures
-    */
+     * Textures
+     */
     const textureLoader = new THREE.TextureLoader();
     const flagTexture = textureLoader.load('/textures/flag-french.jpg');
 
@@ -38,11 +38,11 @@ const Page: FC = () => {
     geometry.setAttribute('aRandom', new THREE.BufferAttribute(randoms, 1)); // just one random value per vertex
     // if we check the geometry.attributes now, it has the aRandom property
 
-
     // Material
     // const material = new THREE.MeshBasicMaterial();
     // we use RawShaderMaterial to create custom shader
-    const material = new THREE.RawShaderMaterial({
+    // use ShaderMaterial, and we can skip matrix definition and uv position in vertex.gsls
+    const material = new THREE.ShaderMaterial({
       // insider here is the glsl code
       vertexShader: testVertexShader,
       fragmentShader: testFragmentShader,
@@ -59,8 +59,18 @@ const Page: FC = () => {
       },
     });
 
-    gui.add(material.uniforms.uFrequency.value, 'x').min(0).max(20).step(0.01).name('frequencyX');
-    gui.add(material.uniforms.uFrequency.value, 'y').min(0).max(20).step(0.01).name('frequencyY');
+    gui
+      .add(material.uniforms.uFrequency.value, 'x')
+      .min(0)
+      .max(20)
+      .step(0.01)
+      .name('frequencyX');
+    gui
+      .add(material.uniforms.uFrequency.value, 'y')
+      .min(0)
+      .max(20)
+      .step(0.01)
+      .name('frequencyY');
 
     // Mesh
     const mesh = new THREE.Mesh(geometry, material);
@@ -93,28 +103,32 @@ const Page: FC = () => {
      * Camera
      */
     // Base camera
-    const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
-    camera.position.set(0.25, - 0.25, 1)
-    scene.add(camera)
+    const camera = new THREE.PerspectiveCamera(
+      75,
+      sizes.width / sizes.height,
+      0.1,
+      100
+    );
+    camera.position.set(0.25, -0.25, 1);
+    scene.add(camera);
 
     // Controls
-    const controls = new OrbitControls(camera, canvas.current)
-    controls.enableDamping = true
+    const controls = new OrbitControls(camera, canvas.current);
+    controls.enableDamping = true;
 
     /**
      * Renderer
      */
     const renderer = new THREE.WebGLRenderer({
-        canvas: canvas.current,
-    })
-    renderer.setSize(sizes.width, sizes.height)
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-
+      canvas: canvas.current,
+    });
+    renderer.setSize(sizes.width, sizes.height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
     /**
      * Animate
      */
-    const clock = new THREE.Clock()
+    const clock = new THREE.Clock();
 
     const tick = () => {
       const elapsedTime = clock.getElapsedTime();
@@ -139,8 +153,8 @@ const Page: FC = () => {
       scene.clear();
       material.dispose();
       renderer.dispose();
-      // gui.destroy();
-    }
+      gui.destroy();
+    };
   }, [canvas.current]);
   return <canvas className="webgl" ref={canvas}></canvas>;
 }
