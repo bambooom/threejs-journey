@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const Page: FC = () => {
   return (
-    <div className='index-page'>
+    <div className="index-page">
       <div>Chapter 1: Basics</div>
       <ul>
         <li>
@@ -81,28 +81,43 @@ const Page: FC = () => {
           <Link to="/chapter3-advanced-techniques/20-physics">20 Physics</Link>
         </li>
         <li>
-          <Link to="/chapter3-advanced-techniques/21-imported-models">21 Imported Models</Link>
+          <Link to="/chapter3-advanced-techniques/21-imported-models">
+            21 Imported Models
+          </Link>
         </li>
         <li>
-          <Link to="/chapter3-advanced-techniques/22-raycaster-and-mouse-events">21 Raycaster and Mouse Events</Link>
+          <Link to="/chapter3-advanced-techniques/22-raycaster-and-mouse-events">
+            21 Raycaster and Mouse Events
+          </Link>
         </li>
         <li>
-          <Link to="/chapter3-advanced-techniques/23-custom-models-with-blender">23 Custom Models with Blender</Link>
+          <Link to="/chapter3-advanced-techniques/23-custom-models-with-blender">
+            23 Custom Models with Blender
+          </Link>
         </li>
         <li>
-          <Link to="/chapter3-advanced-techniques/24-environment-map">24 Environment Map</Link>
+          <Link to="/chapter3-advanced-techniques/24-environment-map">
+            24 Environment Map
+          </Link>
         </li>
         <li>
-          <Link to="/chapter3-advanced-techniques/25-realistic-render">25 Realistic Render</Link>
+          <Link to="/chapter3-advanced-techniques/25-realistic-render">
+            25 Realistic Render
+          </Link>
         </li>
         <li>
-          <Link to="/chapter3-advanced-techniques/26-code-structuring-for-bigger-projects">26 Code Structuring for Bigger Projects</Link>
+          <Link to="/chapter3-advanced-techniques/26-code-structuring-for-bigger-projects">
+            26 Code Structuring for Bigger Projects
+          </Link>
         </li>
       </ul>
       <div>Chapter 4: Shaders</div>
       <ul>
         <li>
           <Link to="/chapter4-shaders/27-shaders">27 Custom Shaders</Link>
+        </li>
+        <li>
+          <Link to="/chapter4-shaders/28-shader-patterns">28 Shader Patterns</Link>
         </li>
       </ul>
     </div>

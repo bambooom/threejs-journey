@@ -1,8 +1,8 @@
 import { type FC, useRef, useEffect } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import testVertexShader from './shaders/27/vertex.glsl';
-import testFragmentShader from './shaders/27/fragment.glsl';
+import testVertexShader from './shaders/28/vertex.glsl';
+import testFragmentShader from './shaders/28/fragment.glsl';
 import GUI from 'lil-gui';
 
 const Page: FC = () => {
@@ -18,63 +18,20 @@ const Page: FC = () => {
     const scene = new THREE.Scene();
 
     /**
-     * Textures
-     */
-    const textureLoader = new THREE.TextureLoader();
-    const flagTexture = textureLoader.load('/textures/flag-french.jpg');
-
-    /**
      * Test mesh
      */
     // Geometry
     const geometry = new THREE.PlaneGeometry(1, 1, 32, 32);
 
-    // create a aRandom attribute
-    const count = geometry.attributes.position.count; // how many vertices, not the length of the array, but exact count
-    const randoms = new Float32Array(count);
-    for (let i = 0; i < count; i++) {
-      randoms[i] = Math.random();
-    }
-    geometry.setAttribute('aRandom', new THREE.BufferAttribute(randoms, 1)); // just one random value per vertex
-    // if we check the geometry.attributes now, it has the aRandom property
-
     // Material
-    // const material = new THREE.MeshBasicMaterial();
-    // we use RawShaderMaterial to create custom shader
-    // use ShaderMaterial, and we can skip matrix definition and uv position in vertex.gsls
     const material = new THREE.ShaderMaterial({
-      // insider here is the glsl code
       vertexShader: testVertexShader,
       fragmentShader: testFragmentShader,
-      // transparent: true, // if we wan to set alpha below 1.0 in gl_FragColor
-      // wireframe: true,
-      // side: THREE.DoubleSide,
-      //  ⬆️ still effective
-
-      uniforms: {
-        uFrequency: { value: new THREE.Vector2(10, 5) },
-        uTime: { value: 0 },
-        uColor: { value: new THREE.Color('orange') },
-        uTexture: { value: flagTexture },
-      },
+      side: THREE.DoubleSide,
     });
-
-    gui
-      .add(material.uniforms.uFrequency.value, 'x')
-      .min(0)
-      .max(20)
-      .step(0.01)
-      .name('frequencyX');
-    gui
-      .add(material.uniforms.uFrequency.value, 'y')
-      .min(0)
-      .max(20)
-      .step(0.01)
-      .name('frequencyY');
 
     // Mesh
     const mesh = new THREE.Mesh(geometry, material);
-    mesh.scale.y = 2 / 3; // make it wider like a flag size
     scene.add(mesh);
 
     /**
@@ -128,13 +85,10 @@ const Page: FC = () => {
     /**
      * Animate
      */
-    const clock = new THREE.Clock();
+    // const clock = new THREE.Clock();
 
     const tick = () => {
-      const elapsedTime = clock.getElapsedTime();
-
-      // update material, uTime
-      material.uniforms.uTime.value = elapsedTime;
+      // const elapsedTime = clock.getElapsedTime();
 
       // Update controls
       controls.update();
@@ -157,6 +111,6 @@ const Page: FC = () => {
     };
   }, [canvas.current]);
   return <canvas className="webgl" ref={canvas}></canvas>;
-}
+};
 
 export default Page;
