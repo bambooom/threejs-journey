@@ -110,6 +110,7 @@ void main()
     // pattern 11: 格子，将前两项叠加
     // float strength = step(0.8, mod(vUv.x * 10.0, 1.0));
     // strength += step(0.8, mod(vUv.y * 10.0, 1.0));
+    // intersection will be too bright it's because the strength is higher than 1.0 and the output gets extrapolated
     // gl_FragColor = vec4(vec3(strength), 1.0);
 
     // pattern 12: 点阵，使用乘法，只能看到相交的部分
@@ -307,9 +308,15 @@ void main()
     // pattern 50: sharper 49, use step
     float strength = step(0.9, sin(cnoise(vUv * 10.0) * 20.0));
 
+    // gl_FragColor = vec4(vec3(strength), 1.0);
 
+    // clamp the strength, limit it to 0.0 to 1.0
+    strength = clamp(strength, 0.0, 1.0); // needed for #11,#14,#15
 
-    gl_FragColor = vec4(vec3(strength), 1.0);
-
+    /** MIX colors */
+    vec3 blackColor = vec3(0.0);
+    vec3 uvColor = vec3(vUv, 1.0);
+    vec3 mixedolor = mix(blackColor, uvColor, strength); // mix color on strength, so all previous pattern will be colored
+    gl_FragColor = vec4(mixedolor, 1.0);
 
 }
