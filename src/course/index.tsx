@@ -119,6 +119,9 @@ const Page: FC = () => {
         <li>
           <Link to="/chapter4-shaders/28-shader-patterns">28 Shader Patterns</Link>
         </li>
+        <li>
+          <Link to="/chapter4-shaders/29-raging-sea">29 Raging Sea</Link>
+        </li>
       </ul>
     </div>
   );
