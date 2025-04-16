@@ -122,6 +122,9 @@ const Page: FC = () => {
         <li>
           <Link to="/chapter4-shaders/29-raging-sea">29 Raging Sea</Link>
         </li>
+        <li>
+          <Link to="/chapter4-shaders/30-animated-galaxy">30 Animated Galaxy</Link>
+        </li>
       </ul>
     </div>
   );
