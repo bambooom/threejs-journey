@@ -1,6 +1,10 @@
 varying vec3 vColor;
 
 void main() {
+  // gl_PointCoord is just the UV coordivates in the point
+  // We cannot send the UV from the vertex shader to the fragment shader
+  // Remember that the vertex shader controls each particle position and a square plane facing the camera appears in place of the vertex.
+
   // can use gl_PointCoord for point's coordinate
 
   // Disc, make it like circle
