@@ -1,133 +1,72 @@
-import { type FC } from 'react';
-import { Link } from 'react-router-dom';
+import { FC, useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import SharedCanvas from '../components/SharedCanvas';
+import ThreeLogo from '../components/ThreeLogo';
+import LessonIcon from '../components/LessonIcon';
+import { courseStructure } from '../data/courseStructure';
 
 const Page: FC = () => {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
   return (
-    <div className="index-page">
-      <div>Chapter 1: Basics</div>
-      <ul>
-        <li>
-          <Link to="/chapter1-basics/03-first-threejs-project">
-            03 First Three.js Project
-          </Link>
-        </li>
-        <li>
-          <Link to="/chapter1-basics/04-transform-objects">
-            04 Transform Objects
-          </Link>
-        </li>
-        <li>
-          <Link to="/chapter1-basics/05-animations">05 Animations</Link>
-        </li>
-        <li>
-          <Link to="/chapter1-basics/06-cameras">06 Cameras</Link>
-        </li>
-        <li>
-          <Link to="/chapter1-basics/07-fullscreen-and-resizing">
-            07 Fullscreen and Resizing
-          </Link>
-        </li>
-        <li>
-          <Link to="/chapter1-basics/08-geometries">08 Geometries</Link>
-        </li>
-        <li>
-          <Link to="/chapter1-basics/09-debug-ui">09 Debug UI</Link>
-        </li>
-        <li>
-          <Link to="/chapter1-basics/10-textures">10 Textures</Link>
-        </li>
-        <li>
-          <Link to="/chapter1-basics/11-materials">11 Materials</Link>
-        </li>
-        <li>
-          <Link to="/chapter1-basics/12-3d-text">12 3D Text</Link>
-        </li>
-        <li>
-          <Link to="/chapter1-basics/13-go-live">13 Go Live</Link>
-        </li>
-      </ul>
-      <div>Chapter 2: Classic Techniques</div>
-      <ul>
-        <li>
-          <Link to="/chapter2-classic-techniques/14-lights">14 Lights</Link>
-        </li>
-        <li>
-          <Link to="/chapter2-classic-techniques/15-shadows">15 Shadows</Link>
-        </li>
-        <li>
-          <Link to="/chapter2-classic-techniques/16-haunted-house">
-            16 Haunted House
-          </Link>
-        </li>
-        <li>
-          <Link to="/chapter2-classic-techniques/17-particles">
-            17 Particles
-          </Link>
-        </li>
-        <li>
-          <Link to="/chapter2-classic-techniques/18-galaxy-generator">
-            18 Galaxy Generator
-          </Link>
-        </li>
-        <li>
-          <Link to="/chapter2-classic-techniques/19-scroll-based-animation">
-            19 Scroll Based Animation
-          </Link>
-        </li>
-      </ul>
-      <div>Chapter 3: Advanced Techniques</div>
-      <ul>
-        <li>
-          <Link to="/chapter3-advanced-techniques/20-physics">20 Physics</Link>
-        </li>
-        <li>
-          <Link to="/chapter3-advanced-techniques/21-imported-models">
-            21 Imported Models
-          </Link>
-        </li>
-        <li>
-          <Link to="/chapter3-advanced-techniques/22-raycaster-and-mouse-events">
-            21 Raycaster and Mouse Events
-          </Link>
-        </li>
-        <li>
-          <Link to="/chapter3-advanced-techniques/23-custom-models-with-blender">
-            23 Custom Models with Blender
-          </Link>
-        </li>
-        <li>
-          <Link to="/chapter3-advanced-techniques/24-environment-map">
-            24 Environment Map
-          </Link>
-        </li>
-        <li>
-          <Link to="/chapter3-advanced-techniques/25-realistic-render">
-            25 Realistic Render
-          </Link>
-        </li>
-        <li>
-          <Link to="/chapter3-advanced-techniques/26-code-structuring-for-bigger-projects">
-            26 Code Structuring for Bigger Projects
-          </Link>
-        </li>
-      </ul>
-      <div>Chapter 4: Shaders</div>
-      <ul>
-        <li>
-          <Link to="/chapter4-shaders/27-shaders">27 Custom Shaders</Link>
-        </li>
-        <li>
-          <Link to="/chapter4-shaders/28-shader-patterns">28 Shader Patterns</Link>
-        </li>
-        <li>
-          <Link to="/chapter4-shaders/29-raging-sea">29 Raging Sea</Link>
-        </li>
-        <li>
-          <Link to="/chapter4-shaders/30-animated-galaxy">30 Animated Galaxy</Link>
-        </li>
-      </ul>
-    </div>
+    <main className="min-h-screen bg-[#0a0a0a] text-white p-6 md:p-10 relative overflow-x-hidden">
+      <SharedCanvas />
+
+      {/* Header Section */}
+      <div className="relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="flex items-center gap-4 mb-8"
+        >
+          <ThreeLogo />
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
+            Three.js Journey
+          </h1>
+        </motion.div>
+
+        {/* Course Structure */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {courseStructure.map((chapter, chapterIndex) => (
+            <motion.div
+              key={chapter.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: chapterIndex * 0.1 }}
+              className="bg-white/5 backdrop-blur-sm rounded-lg p-6"
+            >
+              <h2 className="text-xl font-semibold mb-4">{chapter.title}</h2>
+              <div className="space-y-4">
+                {chapter.lessons.map((lesson, lessonIndex) => (
+                  <motion.div
+                    key={lesson.id}
+                    whileHover={{ scale: 1.02 }}
+                    className="flex items-center gap-3 p-3 rounded-md bg-white/10 hover:bg-white/20 transition-all duration-300"
+                  >
+                    <LessonIcon
+                      lesson={lesson}
+                      color={`hsl(${(chapterIndex * 30 + lessonIndex * 10) % 360}, 70%, 60%)`}
+                      isHovered={false}
+                    />
+                    <span className="text-white/70 hover:text-white transition-colors duration-300">
+                      {lesson.title}
+                    </span>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </main>
   );
 };
 
-export default Page
+export default Page;
