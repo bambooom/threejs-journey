@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@types/react-syntax-highlighter": "^15.5.13",
     "cannon-es": "^0.20.0",
     "gsap": "^3.12.7",
     "lil-gui": "^0.20.0",
@@ -17,6 +18,7 @@
     "react-dom": "^19.1.0",
     "react-router": "^7.5.0",
     "react-router-dom": "^7.5.0",
+    "react-syntax-highlighter": "^15.6.1",
     "three": "^0.175.0"
   },
   "devDependencies": {

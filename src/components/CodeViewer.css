@@ -1,0 +1,100 @@
+.code-viewer-toggle {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  padding: 8px 16px;
+  background-color: #333;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  z-index: 1000;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.code-viewer-toggle:hover {
+  background-color: #555;
+}
+
+.code-viewer-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 50%;
+  height: 100%;
+  background-color: white;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  overflow-y: auto;
+  z-index: 999;
+  transition: transform 0.3s ease;
+}
+
+.code-viewer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+.code-viewer-panel h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.code-viewer-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  color: #666;
+  transition: color 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+
+.code-viewer-close:hover {
+  color: #000;
+  background-color: #f0f0f0;
+}
+
+/* 代码高亮器的容器样式 */
+.code-viewer-panel pre {
+  border-radius: 4px;
+  margin: 0 !important;
+  max-height: calc(100vh - 100px);
+}
+
+/* 暗色主题支持 */
+@media (prefers-color-scheme: dark) {
+  .code-viewer-panel {
+    background-color: #1e1e1e;
+    color: #f0f0f0;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
+  }
+
+  .code-viewer-header {
+    border-bottom-color: #444;
+  }
+
+  .code-viewer-panel h3 {
+    color: #f0f0f0;
+  }
+
+  .code-viewer-close {
+    color: #aaa;
+  }
+
+  .code-viewer-close:hover {
+    color: #fff;
+    background-color: #333;
+  }
+}
