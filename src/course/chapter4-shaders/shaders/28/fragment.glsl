@@ -319,4 +319,5 @@ void main()
     vec3 mixedolor = mix(blackColor, uvColor, strength); // mix color on strength, so all previous pattern will be colored
     gl_FragColor = vec4(mixedolor, 1.0);
 
+    #include <colorspace_fragment>
 }

@@ -32,4 +32,8 @@ void main()
     /**
     * DEBUG Tip: use gl_FragColor to test values on the screen
     */
+
+
+
+    #include <colorspace_fragment>
 }
