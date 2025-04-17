@@ -1,7 +1,7 @@
 import { type FC, useState } from 'react';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs';
-import './codeviewer.css';
+import './CodeViewer.css';
 
 interface CodeViewerProps {
   sourceCode: string;
