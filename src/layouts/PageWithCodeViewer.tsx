@@ -10,6 +10,7 @@ interface PageWithCodeViewerProps {
 /**
  * 页面布局组件，为所有页面添加源代码查看功能
  * 基于当前路由路径自动查找对应的源代码文件
+ * 首页('/'路径)不显示源代码按钮
  *
  * @param props 组件属性，包含子元素
  * @returns 包含源代码查看器的布局组件
@@ -17,11 +18,14 @@ interface PageWithCodeViewerProps {
 const PageWithCodeViewer: React.FC<PageWithCodeViewerProps> = ({ children }) => {
   const location = useLocation();
 
+  // 如果是首页，不显示源代码按钮
+  if (location.pathname === '/') {
+    return <>{children}</>;
+  }
+
   // 从当前路径推断源代码文件路径
   // 例如，'/chapter1-basics/03-first-threejs-project' -> '/course/chapter1-basics/03-first-threejs-project.tsx'
-  const filePath = location.pathname === '/'
-    ? '/course/index.tsx'
-    : `/course${location.pathname}.tsx`;
+  const filePath = `/course${location.pathname}.tsx`;
 
   // 获取源代码和文件名
   const sourceCode = getComponentCode(filePath);
