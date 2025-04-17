@@ -61,6 +61,7 @@ export const courseStructure: Chapter[] = [
       { id: "28", title: "Shader Patterns", path: "/28-shader-patterns" },
       { id: "29", title: "Raging Sea", path: "/29-raging-sea" },
       { id: "30", title: "Animated Galaxy", path: "/30-animated-galaxy" },
+      { id: "31", title: "Modified Materials", path: "/31-modified-materials" },
     ],
   },
 ];
