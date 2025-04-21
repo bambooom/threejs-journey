@@ -10,7 +10,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@tailwindcss/postcss": "^4.1.4",
     "@types/react-syntax-highlighter": "^15.5.13",
     "cannon-es": "^0.20.0",
     "framer-motion": "^12.7.3",
@@ -25,6 +24,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.24.0",
+    "@tailwindcss/vite": "^4.1.4",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
     "@types/three": "^0.175.0",

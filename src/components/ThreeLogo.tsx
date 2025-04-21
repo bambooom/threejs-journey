@@ -40,7 +40,12 @@ const ThreeLogo: FC = () => {
       logoGroup.rotation.x = Math.sin(Date.now() * 0.001) * 0.2;
     };
 
-    threeManager.addScene('indexLogo', scene, camera, animate);
+    threeManager.addScene('indexLogo', scene, camera, animate, {
+      x: 0,
+      y: 0,
+      width: 80,
+      height: 80
+    });
 
     return () => {
       threeManager.removeScene('indexLogo');

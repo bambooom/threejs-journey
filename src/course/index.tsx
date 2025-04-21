@@ -2,7 +2,7 @@ import { FC, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import SharedCanvas from '../components/SharedCanvas';
 import ThreeLogo from '../components/ThreeLogo';
-import LessonIcon from '../components/LessonIcon';
+import ChapterSection from '../components/ChapterSection';
 import { courseStructure } from '../data/courseStructure';
 
 const Page: FC = () => {
@@ -18,52 +18,48 @@ const Page: FC = () => {
     <main className="min-h-screen bg-[#0a0a0a] text-white p-6 md:p-10 relative overflow-x-hidden">
       <SharedCanvas />
 
-      {/* Header Section */}
-      <div className="relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="flex items-center gap-4 mb-8"
-        >
-          <ThreeLogo />
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
-            Three.js Journey
-          </h1>
-        </motion.div>
+      <div className="max-w-7xl mx-auto relative z-10">
+        {/* Header Section */}
+        <header className="mb-16 pt-8">
+          <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
+            <div className="w-20 h-20 relative">
+              <ThreeLogo />
+            </div>
+
+            <div>
+              <motion.h1
+                className="text-4xl md:text-6xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                Three.js Journey
+              </motion.h1>
+              <motion.p
+                className="text-white/70 max-w-2xl"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+              >
+                A showcase of projects from the Three.js Journey course. Explore
+                different chapters and lessons to see what you can create with
+                Three.js.
+              </motion.p>
+            </div>
+          </div>
+
+          <motion.div
+            className="mt-8 h-[1px] bg-gradient-to-r from-blue-500 to-transparent"
+            initial={{ width: 0 }}
+            animate={{ width: '100%' }}
+            transition={{ duration: 1, delay: 0.5 }}
+          />
+        </header>
 
         {/* Course Structure */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {courseStructure.map((chapter, chapterIndex) => (
-            <motion.div
-              key={chapter.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: chapterIndex * 0.1 }}
-              className="bg-white/5 backdrop-blur-sm rounded-lg p-6"
-            >
-              <h2 className="text-xl font-semibold mb-4">{chapter.title}</h2>
-              <div className="space-y-4">
-                {chapter.lessons.map((lesson, lessonIndex) => (
-                  <motion.div
-                    key={lesson.id}
-                    whileHover={{ scale: 1.02 }}
-                    className="flex items-center gap-3 p-3 rounded-md bg-white/10 hover:bg-white/20 transition-all duration-300"
-                  >
-                    <LessonIcon
-                      lesson={lesson}
-                      color={`hsl(${(chapterIndex * 30 + lessonIndex * 10) % 360}, 70%, 60%)`}
-                      isHovered={false}
-                    />
-                    <span className="text-white/70 hover:text-white transition-colors duration-300">
-                      {lesson.title}
-                    </span>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-          ))}
-        </div>
+        {courseStructure.map((chapter, index) => (
+          <ChapterSection key={chapter.id} chapter={chapter} index={index} />
+        ))}
       </div>
     </main>
   );

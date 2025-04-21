@@ -1,14 +1,27 @@
 import * as THREE from 'three';
 
+interface SceneData {
+  scene: THREE.Scene;
+  camera: THREE.Camera;
+  animate: () => void;
+  viewport: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
+}
+
 class ThreeManager {
   private static instance: ThreeManager;
   private renderer: THREE.WebGLRenderer | null = null;
-  private scenes: Map<string, THREE.Scene> = new Map();
-  private cameras: Map<string, THREE.PerspectiveCamera> = new Map();
-  private animationCallbacks: Map<string, () => void> = new Map();
+  private scenes: Map<string, SceneData> = new Map();
   private isAnimating = false;
+  private canvas: HTMLCanvasElement | null = null;
 
-  private constructor() {}
+  private constructor() {
+    this.animate = this.animate.bind(this);
+  }
 
   static getInstance(): ThreeManager {
     if (!ThreeManager.instance) {
@@ -19,91 +32,120 @@ class ThreeManager {
 
   initRenderer(canvas: HTMLCanvasElement) {
     if (!this.renderer) {
+      this.canvas = canvas;
       this.renderer = new THREE.WebGLRenderer({
         canvas,
         alpha: true,
         antialias: true,
         powerPreference: "high-performance",
       });
+      this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      this.renderer.setSize(window.innerWidth, window.innerHeight);
+      this.renderer.setClearColor(0x000000, 0);
+      this.renderer.autoClear = false; // 添加这行，防止自动清除之前的渲染
+
+      window.addEventListener('resize', this.handleResize.bind(this));
       this.startAnimation();
     }
     return this.renderer;
   }
 
-  addScene(id: string, scene: THREE.Scene, camera: THREE.PerspectiveCamera, animationCallback?: () => void) {
-    this.scenes.set(id, scene);
-    this.cameras.set(id, camera);
-    if (animationCallback) {
-      this.animationCallbacks.set(id, animationCallback);
+  private handleResize() {
+    if (!this.renderer || !this.canvas) return;
+
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    this.renderer.setSize(width, height);
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    // 更新所有场景的视口
+    this.scenes.forEach(({ camera, viewport }) => {
+      if (camera instanceof THREE.PerspectiveCamera) {
+        camera.aspect = viewport.width / viewport.height;
+        camera.updateProjectionMatrix();
+      }
+    });
+  }
+
+  addScene(
+    id: string,
+    scene: THREE.Scene,
+    camera: THREE.Camera,
+    animate: () => void,
+    viewport: { x: number; y: number; width: number; height: number }
+  ) {
+    if (!viewport || typeof viewport.x !== 'number' || typeof viewport.y !== 'number' ||
+        typeof viewport.width !== 'number' || typeof viewport.height !== 'number') {
+      console.error('Invalid viewport provided for scene:', id);
+      return;
+    }
+
+    this.scenes.set(id, { scene, camera, animate, viewport });
+    if (!this.isAnimating) {
+      this.startAnimation();
     }
   }
 
   removeScene(id: string) {
-    const scene = this.scenes.get(id);
-    if (scene) {
-      // 清理场景中的资源
-      scene.traverse((object) => {
-        if (object instanceof THREE.Mesh) {
-          object.geometry.dispose();
-          if (Array.isArray(object.material)) {
-            object.material.forEach(material => material.dispose());
-          } else {
-            object.material.dispose();
-          }
-        }
-      });
-    }
     this.scenes.delete(id);
-    this.cameras.delete(id);
-    this.animationCallbacks.delete(id);
+    if (this.scenes.size === 0) {
+      this.stopAnimation();
+    }
   }
 
   private startAnimation() {
-    if (this.isAnimating) return;
-    this.isAnimating = true;
-
-    const animate = () => {
-      if (!this.renderer || this.scenes.size === 0) {
-        this.isAnimating = false;
-        return;
-      }
-
-      // 执行每个场景的动画回调
-      this.animationCallbacks.forEach((callback) => callback());
-
-      // 渲染所有场景
-      this.scenes.forEach((scene, id) => {
-        const camera = this.cameras.get(id);
-        if (camera && this.renderer) {
-          this.renderer.render(scene, camera);
-        }
-      });
-
-      requestAnimationFrame(animate);
-    };
-
-    animate();
-  }
-
-  handleResize(width: number, height: number) {
-    if (this.renderer) {
-      this.renderer.setSize(width, height, false);
-      this.cameras.forEach(camera => {
-        camera.aspect = width / height;
-        camera.updateProjectionMatrix();
-      });
+    if (!this.isAnimating) {
+      this.isAnimating = true;
+      this.animate();
     }
   }
 
-  dispose() {
-    this.scenes.clear();
-    this.cameras.clear();
-    this.animationCallbacks.clear();
-    if (this.renderer) {
-      this.renderer.dispose();
-      this.renderer = null;
-    }
+  private stopAnimation() {
     this.isAnimating = false;
+  }
+
+  private animate() {
+    if (!this.isAnimating || !this.renderer) return;
+
+    requestAnimationFrame(this.animate);
+
+    // 清除整个画布
+    this.renderer.setViewport(0, 0, window.innerWidth, window.innerHeight);
+    this.renderer.clear();
+
+    // 渲染每个场景到其指定的视口
+    this.scenes.forEach(({ scene, camera, animate, viewport }) => {
+      if (!viewport) return;
+
+      animate();
+
+      try {
+        // 更新相机宽高比
+        if (camera instanceof THREE.PerspectiveCamera) {
+          camera.aspect = viewport.width / viewport.height;
+          camera.updateProjectionMatrix();
+        }
+
+        // 设置视口并渲染
+        this.renderer!.setViewport(
+          viewport.x,
+          window.innerHeight - viewport.y - viewport.height,
+          viewport.width,
+          viewport.height
+        );
+        this.renderer!.setScissor(
+          viewport.x,
+          window.innerHeight - viewport.y - viewport.height,
+          viewport.width,
+          viewport.height
+        );
+        this.renderer!.setScissorTest(true);
+        this.renderer!.render(scene, camera);
+      } catch (error) {
+        console.error('Error rendering scene:', error);
+      }
+    });
   }
 }
 

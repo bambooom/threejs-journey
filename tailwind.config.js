@@ -8,4 +8,7 @@ export default {
     extend: {},
   },
   plugins: [],
+  corePlugins: {
+    preflight: true, // 确保启用预设样式
+  },
 };
