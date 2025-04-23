@@ -1,14 +1,16 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        'dm-mono': ['"DM Mono"', 'monospace'],
+        'space-grotesk': ['"Space Grotesk"', 'system-ui', 'sans-serif'],
+      },
+    },
   },
   plugins: [],
   corePlugins: {
-    preflight: true, // 确保启用预设样式
+    preflight: true,
   },
 };

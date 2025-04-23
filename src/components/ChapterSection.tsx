@@ -20,7 +20,7 @@ const ChapterSection: FC<ChapterSectionProps> = ({ chapter, index }) => {
   const chapterColor = chapterColors[index % chapterColors.length];
 
   return (
-    <section id={`chapter-${index}`} className="mb-16 relative">
+    <section id={`chapter-${index}`} className="mb-16 relative font-dm-mono">
       <div className="flex items-center gap-3 mb-6">
         <div
           className="w-3 h-12 rounded-sm"

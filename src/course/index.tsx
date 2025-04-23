@@ -34,7 +34,7 @@ const Page: FC = () => {
               {/* Title and Description */}
               <div>
                 <motion.h1
-                  className="text-4xl md:text-6xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600"
+                  className="font-space-grotesk text-4xl md:text-6xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600"
                   initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5 }}
@@ -42,7 +42,7 @@ const Page: FC = () => {
                   Three.js Journey
                 </motion.h1>
                 <motion.p
-                  className="text-white/70 max-w-2xl"
+                  className="font-dm-mono leading-relaxed text-lg text-white/70 max-w-2xl"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.5, delay: 0.2 }}
