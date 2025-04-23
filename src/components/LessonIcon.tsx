@@ -77,16 +77,16 @@ const LessonIcon: FC<LessonIconProps> = ({ lesson, color, isHovered }) => {
       });
     });
 
-    // 添加滚动监听
     window.addEventListener('scroll', updatePosition);
+    window.addEventListener('resize', updatePosition);
 
-    // 添加 ResizeObserver
     const observer = new ResizeObserver(updatePosition);
     observer.observe(containerRef.current);
 
     return () => {
       renderedRef.current = false;
       window.removeEventListener('scroll', updatePosition);
+      window.removeEventListener('resize', updatePosition);
       observer.disconnect();
       removeScene(sceneIdRef.current);
       geometry.dispose();
