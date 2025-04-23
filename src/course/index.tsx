@@ -22,7 +22,7 @@ const Page: FC = () => {
 
       <IconCanvas>
         {/* Main Content */}
-        <div className="max-w-7xl mx-auto relative z-10">
+        <div className="max-w-7xl mx-auto relative z-1">
           {/* Header Section */}
           <header className="mb-16 pt-8">
             <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
@@ -47,9 +47,9 @@ const Page: FC = () => {
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.5, delay: 0.2 }}
                 >
-                  A showcase of projects from the Three.js Journey course.
-                  Explore different chapters and lessons to see what you can
-                  create with Three.js.
+                  A showcase of projects from the Three.js Journey course. 📝
+                  <br />
+                  Useful comments and notes in the source code.👩🏻‍💻
                 </motion.p>
               </div>
             </div>
