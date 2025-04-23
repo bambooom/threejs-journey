@@ -19,26 +19,55 @@ const Logo: FC = () => {
     const logoGroup = new THREE.Group();
     logoGroupRef.current = logoGroup;
 
-    const cubeGeometry = new THREE.BoxGeometry(1.5, 2, 1.3);
-    const cubeMaterial = new THREE.MeshStandardMaterial({
-      color: '#a14be3',
-      metalness: 0.3,
-      roughness: 0.4,
-    });
-    const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-    cube.position.x = -0.8;
-    logoGroup.add(cube);
+    const gradientShader = {
+      uniforms: {
+        color1: { value: new THREE.Color('#a14be3') },
+        color2: { value: new THREE.Color('#ff5bd1') },
+      },
+      vertexShader: `
+        varying vec2 vUv;
+        void main() {
+          vUv = uv;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform vec3 color1;
+        uniform vec3 color2;
+        varying vec2 vUv;
+        void main() {
+          vec3 color = mix(color1, color2, vUv.y);
+          gl_FragColor = vec4(color, 1.0);
+        }
+      `
+    };
 
-    const sphereGeometry = new THREE.SphereGeometry(1, 32, 32);
-    const sphereMaterial = new THREE.MeshStandardMaterial({
-      color: '#ff5bd1',
-      metalness: 0.2,
-      roughness: 0.4,
+    // Create TorusKnot (inner shape)
+    const knotGeometry = new THREE.TorusKnotGeometry(0.6, 0.2, 100, 16);
+    const knotMaterial = new THREE.ShaderMaterial({
+      ...gradientShader,
+      uniforms: {
+        color1: { value: new THREE.Color('#ff5bd1') },
+        color2: { value: new THREE.Color('#a14be3') },
+      },
     });
-    const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-    sphere.position.x = 0.8;
-    sphere.position.y = 0.6;
-    logoGroup.add(sphere);
+    const knot = new THREE.Mesh(knotGeometry, knotMaterial);
+    logoGroup.add(knot);
+
+    // Create Torus (outer shape)
+    // Parameters: radius, tube, radialSegments, tubularSegments
+    const torusGeometry = new THREE.TorusGeometry(1.2, 0.1, 16, 100);
+    const torusMaterial = new THREE.ShaderMaterial({
+      ...gradientShader,
+      uniforms: {
+        color1: { value: new THREE.Color('#a14be3') },
+        color2: { value: new THREE.Color('#ff5bd1') },
+      },
+    });
+    const torus = new THREE.Mesh(torusGeometry, torusMaterial);
+    // Rotate the torus to make it encircle the knot
+    torus.rotation.x = Math.PI / 2;
+    logoGroup.add(torus);
 
     scene.add(logoGroup);
 
@@ -53,7 +82,12 @@ const Logo: FC = () => {
       if (!logoGroupRef.current || !renderedRef.current) return;
       const targetSpeed = isHovered ? 0.05 : 0.01;
       logoGroupRef.current.rotation.y += targetSpeed;
-      logoGroupRef.current.rotation.x = Math.sin(Date.now() * 0.001) * 0.3;
+
+      // Add different rotation to torus and knot
+      if (knot && torus) {
+        knot.rotation.x += targetSpeed * 0.5;
+        torus.rotation.y += targetSpeed * 0.3;
+      }
     };
 
     const updatePosition = () => {
@@ -93,17 +127,17 @@ const Logo: FC = () => {
       window.removeEventListener('scroll', updatePosition);
       observer.disconnect();
       removeScene('logo');
-      cubeGeometry.dispose();
-      cubeMaterial.dispose();
-      sphereGeometry.dispose();
-      sphereMaterial.dispose();
+      knotGeometry.dispose();
+      knotMaterial.dispose();
+      torusGeometry.dispose();
+      torusMaterial.dispose();
     };
   }, [isHovered, addScene, removeScene, updateSceneViewport]);
 
   return (
     <div
       ref={containerRef}
-      className="w-20 h-20 relative" // 增加容器尺寸
+      className="w-20 h-20 relative"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     />
