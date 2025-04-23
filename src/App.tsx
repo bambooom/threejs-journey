@@ -1,39 +1,16 @@
-import { Suspense, useMemo, useRef, useEffect } from 'react';
+import { Suspense, useMemo } from 'react';
 import routes from '~react-pages';
 import { useRoutes } from 'react-router-dom';
 import './App.css';
 import { enhanceRoutes } from './wrappers/RouteWrapper';
-import { threeManager } from './utils/ThreeManager';
 
 function App() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    if (canvasRef.current) {
-      threeManager.initRenderer(canvasRef.current);
-    }
-  }, []);
-
   const enhancedRoutes = useMemo(() => enhanceRoutes(routes), [routes]);
 
   return (
-    <>
-      <canvas
-        ref={canvasRef}
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100vw',
-          height: '100vh',
-          pointerEvents: 'none',
-          zIndex: 1,
-        }}
-      />
-      <Suspense fallback={<p>Loading...</p>}>
-        {useRoutes(enhancedRoutes)}
-      </Suspense>
-    </>
+    <Suspense fallback={<p>Loading...</p>}>
+      {useRoutes(enhancedRoutes)}
+    </Suspense>
   );
 }
 

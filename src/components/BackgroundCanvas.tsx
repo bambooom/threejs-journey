@@ -1,18 +1,20 @@
-import { FC, useEffect, useRef, useMemo } from 'react';
+import { FC, useEffect, useRef } from 'react';
 import * as THREE from 'three';
-import { threeManager } from '../utils/ThreeManager';
 
-const SharedCanvas: FC = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
+const BackgroundCanvas: FC = () => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
+  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!canvasRef.current) return;
 
-    // Setup scene and camera
+    // Setup scene
     const scene = new THREE.Scene();
     sceneRef.current = scene;
 
+    // Setup camera
     const camera = new THREE.PerspectiveCamera(
       75,
       window.innerWidth / window.innerHeight,
@@ -20,8 +22,11 @@ const SharedCanvas: FC = () => {
       1000
     );
     camera.position.z = 5;
+    cameraRef.current = camera;
 
-    // Create particle system
+    /**
+     * Particles
+     */
     const particlesGeometry = new THREE.BufferGeometry();
     const particlesCount = 500;
 
@@ -53,16 +58,24 @@ const SharedCanvas: FC = () => {
     );
 
     const particlesMaterial = new THREE.PointsMaterial({
-      size: 0.05,
+      size: 0.08,
+      sizeAttenuation: true,
       vertexColors: true,
       transparent: true,
       opacity: 0.7,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
     });
 
-    const particleSystem = new THREE.Points(particlesGeometry, particlesMaterial);
+    const particleSystem = new THREE.Points(
+      particlesGeometry,
+      particlesMaterial
+    );
     scene.add(particleSystem);
 
-    // Create chapter objects
+    /**
+     * Chapter Objects
+     */
     const chapterObjects: THREE.Mesh[] = [];
     const chapterShapes = ['box', 'sphere', 'torus', 'cone'];
     const chapterColors = [
@@ -72,9 +85,10 @@ const SharedCanvas: FC = () => {
       '#f39c12', // Chapter 4: Orange
     ];
 
+    let geometry: THREE.BufferGeometry | undefined,
+      material: THREE.Material | undefined,
+      mesh: THREE.Mesh | undefined;
     for (let i = 0; i < 4; i++) {
-      let geometry;
-
       switch (chapterShapes[i % chapterShapes.length]) {
         case 'sphere':
           geometry = new THREE.SphereGeometry(0.5, 16, 16);
@@ -90,13 +104,13 @@ const SharedCanvas: FC = () => {
           geometry = new THREE.BoxGeometry(0.7, 0.7, 0.7);
       }
 
-      const material = new THREE.MeshStandardMaterial({
+      material = new THREE.MeshStandardMaterial({
         color: chapterColors[i % chapterColors.length],
         metalness: 0.3,
         roughness: 0.4,
       });
 
-      const mesh = new THREE.Mesh(geometry, material);
+      mesh = new THREE.Mesh(geometry, material);
       mesh.position.set(-5 - i * 2, 0, 0);
 
       scene.add(mesh);
@@ -120,10 +134,31 @@ const SharedCanvas: FC = () => {
 
     window.addEventListener('mousemove', handleMouseMove);
 
-    // Animation loop
-    const clock = new THREE.Clock();
+    // Setup renderer
+    const renderer = new THREE.WebGLRenderer({
+      canvas: canvasRef.current,
+      alpha: true,
+      antialias: true,
+    });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    rendererRef.current = renderer;
 
+    // Handle resize
+    const handleResize = () => {
+      if (!renderer || !camera) return;
+
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    };
+
+    // Animation
+    const clock = new THREE.Clock();
     const animate = () => {
+      if (!renderer || !scene || !camera) return;
+
       const elapsedTime = clock.getElapsedTime();
       particleSystem.rotation.y = elapsedTime * 0.05;
 
@@ -139,7 +174,8 @@ const SharedCanvas: FC = () => {
           const rect = section.getBoundingClientRect();
           const sectionTop = rect.top + scrollY;
           const sectionMiddle = sectionTop + rect.height / 2;
-          const distanceFromMiddle = sectionMiddle - (scrollY + windowHeight / 2);
+          const distanceFromMiddle =
+            sectionMiddle - (scrollY + windowHeight / 2);
           const normalizedDistance = Math.max(
             -1,
             Math.min(1, distanceFromMiddle / windowHeight)
@@ -152,56 +188,32 @@ const SharedCanvas: FC = () => {
           obj.position.y += (targetY - obj.position.y) * 0.05;
         }
       });
-    };
 
-    threeManager.addScene('mainBackground', scene, camera, animate, {
-      x: 0,
-      y: 0,
-      width: window.innerWidth,
-      height: window.innerHeight
-    });
-
-    // Handle window resize
-    const handleResize = () => {
-      if (!containerRef.current) return;
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-
-      threeManager.addScene('mainBackground', scene, camera, animate, {
-        x: 0,
-        y: 0,
-        width: window.innerWidth,
-        height: window.innerHeight
-      });
+      renderer.render(scene, camera);
+      requestAnimationFrame(animate);
     };
 
     window.addEventListener('resize', handleResize);
+    animate();
 
     // Cleanup
     return () => {
-      if (sceneRef.current) {
-        threeManager.removeScene('mainBackground');
-        sceneRef.current = null;
-      }
       window.removeEventListener('resize', handleResize);
-      window.removeEventListener('mousemove', handleMouseMove);
+      renderer.dispose();
       particlesGeometry.dispose();
       particlesMaterial.dispose();
-      chapterObjects.forEach((obj) => {
-        obj.geometry.dispose();
-        if (obj.material instanceof THREE.Material) {
-          obj.material.dispose();
-        }
-      });
+      geometry?.dispose();
+      material?.dispose();
+      scene.clear();
     };
   }, []);
 
-  return useMemo(() => (
-    <div
-      ref={containerRef}
+  return (
+    <canvas
+      ref={canvasRef}
       className="fixed top-0 left-0 w-full h-full -z-10"
     />
-  ), []);
+  );
 };
 
-export default SharedCanvas;
+export default BackgroundCanvas;

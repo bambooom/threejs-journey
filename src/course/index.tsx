@@ -1,6 +1,7 @@
 import { FC, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import SharedCanvas from '../components/SharedCanvas';
+import BackgroundCanvas from '../components/BackgroundCanvas';
+// import IconCanvas from '../components/IconCanvas';
 import ThreeLogo from '../components/ThreeLogo';
 import ChapterSection from '../components/ChapterSection';
 import { courseStructure } from '../data/courseStructure';
@@ -15,9 +16,9 @@ const Page: FC = () => {
   if (!mounted) return null;
 
   return (
-    <main className="min-h-screen bg-[#0a0a0a] text-white p-6 md:p-10 relative overflow-x-hidden">
+    <main className="min-h-screen text-white p-6 md:p-10 relative overflow-x-hidden">
       {/* 3D Background Canvas */}
-      <SharedCanvas />
+      <BackgroundCanvas />
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto relative z-10">
@@ -61,10 +62,12 @@ const Page: FC = () => {
           />
         </header>
 
-        {/* Course Structure */}
-        {courseStructure.map((chapter, index) => (
-          <ChapterSection key={chapter.id} chapter={chapter} index={index} />
-        ))}
+        {/* <IconCanvas> */}
+          {/* Course Structure */}
+          {courseStructure.map((chapter, index) => (
+            <ChapterSection key={chapter.id} chapter={chapter} index={index} />
+          ))}
+        {/* </IconCanvas> */}
       </div>
     </main>
   );
