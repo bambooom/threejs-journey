@@ -1,7 +1,7 @@
 import { FC, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import BackgroundCanvas from '../components/BackgroundCanvas';
-// import IconCanvas from '../components/IconCanvas';
+import IconCanvas from '../components/IconCanvas';
 import ThreeLogo from '../components/ThreeLogo';
 import ChapterSection from '../components/ChapterSection';
 import { courseStructure } from '../data/courseStructure';
@@ -62,12 +62,12 @@ const Page: FC = () => {
           />
         </header>
 
-        {/* <IconCanvas> */}
+        <IconCanvas>
           {/* Course Structure */}
           {courseStructure.map((chapter, index) => (
             <ChapterSection key={chapter.id} chapter={chapter} index={index} />
           ))}
-        {/* </IconCanvas> */}
+        </IconCanvas>
       </div>
     </main>
   );
