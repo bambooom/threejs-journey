@@ -16,16 +16,20 @@ const Page: FC = () => {
 
   return (
     <main className="min-h-screen bg-[#0a0a0a] text-white p-6 md:p-10 relative overflow-x-hidden">
+      {/* 3D Background Canvas */}
       <SharedCanvas />
 
+      {/* Main Content */}
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Header Section */}
         <header className="mb-16 pt-8">
           <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
+            {/* Three.js Logo */}
             <div className="w-20 h-20 relative">
               <ThreeLogo />
             </div>
 
+            {/* Title and Description */}
             <div>
               <motion.h1
                 className="text-4xl md:text-6xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600"
@@ -48,6 +52,7 @@ const Page: FC = () => {
             </div>
           </div>
 
+          {/* Animated Divider */}
           <motion.div
             className="mt-8 h-[1px] bg-gradient-to-r from-blue-500 to-transparent"
             initial={{ width: 0 }}

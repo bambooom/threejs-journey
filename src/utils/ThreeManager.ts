@@ -1,15 +1,18 @@
 import * as THREE from 'three';
 
+interface Viewport {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
 interface SceneData {
+  id: string;
   scene: THREE.Scene;
   camera: THREE.Camera;
   animate: () => void;
-  viewport: {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-  };
+  viewport: Viewport;
 }
 
 class ThreeManager {
@@ -42,7 +45,7 @@ class ThreeManager {
       this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       this.renderer.setSize(window.innerWidth, window.innerHeight);
       this.renderer.setClearColor(0x000000, 0);
-      this.renderer.autoClear = false; // 添加这行，防止自动清除之前的渲染
+      this.renderer.autoClear = false;
 
       window.addEventListener('resize', this.handleResize.bind(this));
       this.startAnimation();
@@ -59,7 +62,6 @@ class ThreeManager {
     this.renderer.setSize(width, height);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-    // 更新所有场景的视口
     this.scenes.forEach(({ camera, viewport }) => {
       if (camera instanceof THREE.PerspectiveCamera) {
         camera.aspect = viewport.width / viewport.height;
@@ -73,7 +75,7 @@ class ThreeManager {
     scene: THREE.Scene,
     camera: THREE.Camera,
     animate: () => void,
-    viewport: { x: number; y: number; width: number; height: number }
+    viewport: Viewport
   ) {
     if (!viewport || typeof viewport.x !== 'number' || typeof viewport.y !== 'number' ||
         typeof viewport.width !== 'number' || typeof viewport.height !== 'number') {
@@ -81,7 +83,7 @@ class ThreeManager {
       return;
     }
 
-    this.scenes.set(id, { scene, camera, animate, viewport });
+    this.scenes.set(id, { id, scene, camera, animate, viewport });
     if (!this.isAnimating) {
       this.startAnimation();
     }
@@ -105,6 +107,13 @@ class ThreeManager {
     this.isAnimating = false;
   }
 
+  updateSceneViewport(sceneId: string, viewport: Viewport) {
+    const sceneData = this.scenes.get(sceneId);
+    if (sceneData) {
+      sceneData.viewport = viewport;
+    }
+  }
+
   private animate() {
     if (!this.isAnimating || !this.renderer) return;
 
@@ -114,37 +123,35 @@ class ThreeManager {
     this.renderer.setViewport(0, 0, window.innerWidth, window.innerHeight);
     this.renderer.clear();
 
+    // 将Map转换为数组并按z-index排序
+    const sortedScenes = Array.from(this.scenes.entries()).sort(([idA], [idB]) => {
+      const zIndexA = idA.startsWith('lessonIcon') ? 2 : 1;
+      const zIndexB = idB.startsWith('lessonIcon') ? 2 : 1;
+      return zIndexA - zIndexB;
+    });
+
     // 渲染每个场景到其指定的视口
-    this.scenes.forEach(({ scene, camera, animate, viewport }) => {
+    sortedScenes.forEach(([, sceneData]) => {
+      const { scene, camera, animate, viewport } = sceneData;
       if (!viewport) return;
 
       animate();
 
-      try {
-        // 更新相机宽高比
-        if (camera instanceof THREE.PerspectiveCamera) {
-          camera.aspect = viewport.width / viewport.height;
-          camera.updateProjectionMatrix();
-        }
-
-        // 设置视口并渲染
-        this.renderer!.setViewport(
-          viewport.x,
-          window.innerHeight - viewport.y - viewport.height,
-          viewport.width,
-          viewport.height
-        );
-        this.renderer!.setScissor(
-          viewport.x,
-          window.innerHeight - viewport.y - viewport.height,
-          viewport.width,
-          viewport.height
-        );
-        this.renderer!.setScissorTest(true);
-        this.renderer!.render(scene, camera);
-      } catch (error) {
-        console.error('Error rendering scene:', error);
-      }
+      // 设置视口并渲染
+      this.renderer!.setViewport(
+        viewport.x,
+        window.innerHeight - (viewport.y - window.scrollY) - viewport.height,
+        viewport.width,
+        viewport.height
+      );
+      this.renderer!.setScissor(
+        viewport.x,
+        window.innerHeight - (viewport.y - window.scrollY) - viewport.height,
+        viewport.width,
+        viewport.height
+      );
+      this.renderer!.setScissorTest(true);
+      this.renderer!.render(scene, camera);
     });
   }
 }

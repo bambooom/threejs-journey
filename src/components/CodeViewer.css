@@ -66,14 +66,12 @@
   background-color: #f0f0f0;
 }
 
-/* 代码高亮器的容器样式 */
 .code-viewer-panel pre {
   border-radius: 4px;
   margin: 0 !important;
   max-height: calc(100vh - 100px);
 }
 
-/* 暗色主题支持 */
 @media (prefers-color-scheme: dark) {
   .code-viewer-panel {
     background-color: #1e1e1e;

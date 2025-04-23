@@ -1,8 +1,8 @@
-// src/components/ChapterSection.tsx
 import { FC } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import LessonIcon from './LessonIcon';
+import { Chapter } from '../types';
 
 const chapterColors = [
   '#4e54c8', // 第一章: 偏紫色蓝
@@ -10,19 +10,6 @@ const chapterColors = [
   '#e84393', // 第三章: 粉色
   '#f39c12', // 第四章: 橙色
 ];
-
-interface Lesson {
-  id: string;
-  title: string;
-  path: string;
-}
-
-interface Chapter {
-  id: string;
-  title: string;
-  path: string;
-  lessons: Lesson[];
-}
 
 interface ChapterSectionProps {
   chapter: Chapter;
