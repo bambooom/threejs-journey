@@ -3,6 +3,8 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import GUI from 'lil-gui';
+import coffeeSmokeVertexShader from './shaders/32/vertex.glsl';
+import coffeeSmokeFragmentShader from './shaders/32/fragment.glsl';
 
 const Page: FC = () => {
   const canvas = useRef<HTMLCanvasElement>(null);
@@ -93,9 +95,22 @@ const Page: FC = () => {
     // applying translate to the geometry (not on mesh) will make the upcoming vertex calculations more convenient.
     smokeGeometry.scale(1.5, 6, 1.5);
 
+    // Perlin texture, use it in fragment shader
+    const perlinTexture = textureLoader.load('/textures/perlin.png');
+    perlinTexture.wrapS = THREE.RepeatWrapping;
+    perlinTexture.wrapT = THREE.RepeatWrapping;
+    // make sure the texture repeat it self
+
     // material
-    const smokeMaterial = new THREE.MeshBasicMaterial({
-      color: 'cyan',
+    const smokeMaterial = new THREE.ShaderMaterial({
+      vertexShader: coffeeSmokeVertexShader,
+      fragmentShader: coffeeSmokeFragmentShader,
+      uniforms: {
+        uTime: new THREE.Uniform(0),
+        uPerlinTexture: new THREE.Uniform(perlinTexture), // use THREE.Uniform class
+      },
+      side: THREE.DoubleSide,
+      transparent: true,
       wireframe: true,
     });
 
@@ -107,10 +122,13 @@ const Page: FC = () => {
     /**
      * Animate
      */
-    // const clock = new THREE.Clock();
+    const clock = new THREE.Clock();
 
     const tick = () => {
-      // const elapsedTime = clock.getElapsedTime();
+      const elapsedTime = clock.getElapsedTime();
+
+      // update smoke
+      smokeMaterial.uniforms.uTime.value = elapsedTime;
 
       // Update controls
       controls.update();

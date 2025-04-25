@@ -14,4 +14,9 @@ export default defineConfig({
     glsl(),
     tailwindcss(),
   ],
+  server: {
+    watch: {
+      ignored: ['!**/*.glsl'],
+    },
+  },
 });
