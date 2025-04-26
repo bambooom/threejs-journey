@@ -31,7 +31,7 @@ void main()
   // Final color, brown
   gl_FragColor = vec4(0.6, 0.3, 0.2, smoke); // set alpha to smoke, need to set transparent
 
-  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+  // gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
 
   #include <tonemapping_fragment> // add toneMapping for renderer
   #include <colorspace_fragment>

@@ -111,7 +111,8 @@ const Page: FC = () => {
       },
       side: THREE.DoubleSide,
       transparent: true,
-      wireframe: true,
+      depthWrite: false, // Transparency occluding problems, if true, it'll occlude anything behind it, including itself. 阻挡自身
+      // wireframe: true,
     });
 
     // mesh
