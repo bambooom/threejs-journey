@@ -12,7 +12,7 @@ interface LessonIconProps {
 
 const LessonIcon: FC<LessonIconProps> = ({ lesson, color, isHovered }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const meshRef = useRef<THREE.Mesh | null>(null);
+  const meshRef = useRef<THREE.Mesh | THREE.Points | null>(null);
   const sceneIdRef = useRef(`lessonIcon-${lesson.id}`);
   const renderedRef = useRef(false);
 
@@ -20,8 +20,6 @@ const LessonIcon: FC<LessonIconProps> = ({ lesson, color, isHovered }) => {
 
   useEffect(() => {
     if (!containerRef.current) return;
-
-    const rect = containerRef.current.getBoundingClientRect();
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
@@ -35,9 +33,15 @@ const LessonIcon: FC<LessonIconProps> = ({ lesson, color, isHovered }) => {
     const geometry = getGeometryForLesson(lesson.title);
     const material = getMaterialForLesson(lesson.title, color);
 
-    const mesh = new THREE.Mesh(geometry, material);
-    meshRef.current = mesh;
-    scene.add(mesh);
+    let object3D: THREE.Object3D;
+    if (lesson.title.toLowerCase().includes('particles') || lesson.title.toLowerCase().includes('galaxy')) {
+      object3D = new THREE.Points(geometry, material as THREE.PointsMaterial);
+      meshRef.current = object3D as THREE.Points;
+    } else {
+      object3D = new THREE.Mesh(geometry, material);
+      meshRef.current = object3D as THREE.Mesh;
+    }
+    scene.add(object3D);
 
     let animationSpeed = 0.01;
     const targetAnimationSpeed = isHovered ? 0.05 : 0.01;
@@ -60,9 +64,11 @@ const LessonIcon: FC<LessonIconProps> = ({ lesson, color, isHovered }) => {
       });
     };
 
-    // 初始化场景
-    requestAnimationFrame(() => {
+    const initScene = () => {
+      if (!containerRef.current) return;
+
       renderedRef.current = true;
+      const rect = containerRef.current.getBoundingClientRect();
       addScene({
         id: sceneIdRef.current,
         scene,
@@ -75,7 +81,18 @@ const LessonIcon: FC<LessonIconProps> = ({ lesson, color, isHovered }) => {
           height: rect.height,
         }
       });
-    });
+
+      // update position immediately after initialization
+      updatePosition();
+    };
+
+    // use multiple time points to try to correct position
+    const timeouts = [
+      setTimeout(initScene, 50),
+      setTimeout(updatePosition, 100),
+      setTimeout(updatePosition, 500),
+      setTimeout(updatePosition, 800),
+    ];
 
     window.addEventListener('scroll', updatePosition);
     window.addEventListener('resize', updatePosition);
@@ -91,6 +108,8 @@ const LessonIcon: FC<LessonIconProps> = ({ lesson, color, isHovered }) => {
       removeScene(sceneIdRef.current);
       geometry.dispose();
       material.dispose();
+
+      timeouts.forEach(clearTimeout);
     };
   }, [lesson.id, lesson.title, color, isHovered, addScene, removeScene, updateSceneViewport]);
 
