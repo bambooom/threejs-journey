@@ -92,6 +92,7 @@ export const courseStructure: Chapter[] = [
       { id: '30', title: 'Animated Galaxy', path: '/30-animated-galaxy' },
       { id: '31', title: 'Modified Materials', path: '/31-modified-materials' },
       { id: '32', title: 'Coffee Smoke', path: '/32-coffee-smoke' },
+      { id: '33', title: 'Hologram', path: '/33-hologram' },
     ],
   },
 ];

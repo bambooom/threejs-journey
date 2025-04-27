@@ -142,3 +142,6 @@ dist
 *.njsproj
 *.sln
 *.sw?
+
+# Other Course Materials
+course-materials
