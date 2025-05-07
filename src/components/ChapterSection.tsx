@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import LessonIcon from './LessonIcon';
@@ -18,6 +18,7 @@ interface ChapterSectionProps {
 
 const ChapterSection: FC<ChapterSectionProps> = ({ chapter, index }) => {
   const chapterColor = chapterColors[index % chapterColors.length];
+  const [hoveringIdx, setHoveringIdx] = useState<number | null>(null);
 
   return (
     <section id={`chapter-${index}`} className="mb-16 relative font-dm-mono">
@@ -48,6 +49,8 @@ const ChapterSection: FC<ChapterSectionProps> = ({ chapter, index }) => {
             <Link
               to={`${chapter.path}${lesson.path}`}
               className="group block p-5 rounded-lg bg-white/5 hover:bg-white/10 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg hover:shadow-[rgba(0,0,0,0.2)] backdrop-blur-sm"
+              onMouseEnter={() => setHoveringIdx(lessonIndex)}
+              onMouseLeave={() => setHoveringIdx(null)}
             >
               <div className="flex items-center gap-3">
                 <div
@@ -68,7 +71,7 @@ const ChapterSection: FC<ChapterSectionProps> = ({ chapter, index }) => {
                   <LessonIcon
                     lesson={lesson}
                     color={chapterColor}
-                    isHovered={false}
+                    isHovered={lessonIndex === hoveringIdx}
                   />
                 </div>
               </div>

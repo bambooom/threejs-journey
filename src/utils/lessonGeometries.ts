@@ -13,7 +13,10 @@ export const getGeometryForLesson = (title: string): THREE.BufferGeometry => {
     return new THREE.SphereGeometry(0.8, 16, 16);
   } else if (lowerTitle.includes('shadows')) {
     return new THREE.BoxGeometry(0.8, 0.8, 0.8);
-  } else if (lowerTitle.includes('particles') || lowerTitle.includes('galaxy')) {
+  } else if (
+    lowerTitle.includes('particles') ||
+    lowerTitle.includes('galaxy')
+  ) {
     const particleCount = 20;
     const positions = new Float32Array(particleCount * 3);
 
@@ -42,7 +45,10 @@ export const getGeometryForLesson = (title: string): THREE.BufferGeometry => {
     return new THREE.BoxGeometry(0.7, 0.7, 0.7);
   } else if (lowerTitle.includes('camera')) {
     return new THREE.ConeGeometry(0.7, 1.2, 32);
-  } else if (lowerTitle.includes('fullscreen') || lowerTitle.includes('resizing')) {
+  } else if (
+    lowerTitle.includes('fullscreen') ||
+    lowerTitle.includes('resizing')
+  ) {
     return new THREE.TorusGeometry(0.5, 0.8, 32);
   } else if (lowerTitle.includes('debug')) {
     return new THREE.TorusGeometry(0.5, 0.2, 8, 24);
@@ -63,7 +69,10 @@ export const getGeometryForLesson = (title: string): THREE.BufferGeometry => {
   return new THREE.IcosahedronGeometry(0.8, 0);
 };
 
-export const getMaterialForLesson = (title: string, color: string): THREE.Material => {
+export const getMaterialForLesson = (
+  title: string,
+  color: string
+): THREE.Material => {
   const lowerTitle = title.toLowerCase();
 
   if (lowerTitle.includes('materials')) {
@@ -80,11 +89,14 @@ export const getMaterialForLesson = (title: string, color: string): THREE.Materi
       metalness: 0.5,
       roughness: 0.5,
     });
-  } else if (lowerTitle.includes('particles') || lowerTitle.includes('galaxy')) {
+  } else if (
+    lowerTitle.includes('particles') ||
+    lowerTitle.includes('galaxy')
+  ) {
     return new THREE.PointsMaterial({
       color,
       size: 0.01,
-      sizeAttenuation: true
+      sizeAttenuation: true,
     });
   } else if (lowerTitle.includes('shaders')) {
     return new THREE.MeshBasicMaterial({

@@ -1,7 +1,10 @@
 import { FC, useRef, useEffect } from 'react';
 import * as THREE from 'three';
 import { useIconCanvas } from '../contexts/IconCanvasContext';
-import { getGeometryForLesson, getMaterialForLesson } from '../utils/lessonGeometries';
+import {
+  getGeometryForLesson,
+  getMaterialForLesson,
+} from '../utils/lessonGeometries';
 import { Lesson } from '../types';
 
 interface LessonIconProps {
@@ -34,7 +37,10 @@ const LessonIcon: FC<LessonIconProps> = ({ lesson, color, isHovered }) => {
     const material = getMaterialForLesson(lesson.title, color);
 
     let object3D: THREE.Object3D;
-    if (lesson.title.toLowerCase().includes('particles') || lesson.title.toLowerCase().includes('galaxy')) {
+    if (
+      lesson.title.toLowerCase().includes('particles') ||
+      lesson.title.toLowerCase().includes('galaxy')
+    ) {
       object3D = new THREE.Points(geometry, material as THREE.PointsMaterial);
       meshRef.current = object3D as THREE.Points;
     } else {
@@ -79,7 +85,7 @@ const LessonIcon: FC<LessonIconProps> = ({ lesson, color, isHovered }) => {
           y: rect.top + window.scrollY,
           width: rect.width,
           height: rect.height,
-        }
+        },
       });
 
       // update position immediately after initialization
@@ -111,7 +117,15 @@ const LessonIcon: FC<LessonIconProps> = ({ lesson, color, isHovered }) => {
 
       timeouts.forEach(clearTimeout);
     };
-  }, [lesson.id, lesson.title, color, isHovered, addScene, removeScene, updateSceneViewport]);
+  }, [
+    lesson.id,
+    lesson.title,
+    color,
+    isHovered,
+    addScene,
+    removeScene,
+    updateSceneViewport,
+  ]);
 
   return (
     <div
