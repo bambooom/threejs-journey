@@ -2,7 +2,7 @@ import { type FC, useRef, useEffect } from 'react';
 import * as THREE from 'three';
 import gsap from 'gsap';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { Sky } from 'three/addons/objects/sky.js';
+import { Sky } from 'three/examples/jsm/objects/Sky.js';
 import fireworkVertexShader from './shaders/34/vertex.glsl';
 import fireworkFragmentShader from './shaders/34/fragment.glsl';
 import GUI from 'lil-gui';
