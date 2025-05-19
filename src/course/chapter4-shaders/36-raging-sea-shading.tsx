@@ -1,8 +1,8 @@
 import { type FC, useRef, useEffect } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import waterVertexShader from './shaders/29/water/vertex.glsl';
-import waterFragmentShader from './shaders/29/water/fragment.glsl';
+import waterVertexShader from './shaders/36/vertex.glsl';
+import waterFragmentShader from './shaders/36/fragment.glsl';
 import GUI from 'lil-gui';
 
 const Page: FC = () => {
@@ -22,9 +22,9 @@ const Page: FC = () => {
     const scene = new THREE.Scene();
 
     // Axes helper
-    const axesHelper = new THREE.AxesHelper();
-    axesHelper.position.y += 0.25;
-    scene.add(axesHelper);
+    // const axesHelper = new THREE.AxesHelper();
+    // axesHelper.position.y += 0.25;
+    // scene.add(axesHelper);
 
     /**
      * Water

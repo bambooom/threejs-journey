@@ -5,7 +5,7 @@ uniform float uColorMultiplier;
 
 varying float vElevation;
 varying vec3 vNormal;
-varying vec3 vPotiion;
+varying vec3 vPosition;
 
 #include ./includes/ambientLight.glsl
 #include ./includes/directionalLight.glsl
@@ -28,7 +28,7 @@ void main()
     // Point light
     light += pointLight(
         vec3(1.0),     // white color
-        10.0,                               // Light intensity
+        20.0,                               // Light intensity
         normal,                           // Normal
         vec3(0.0, 0.25, 0.0),     // Light potision, slightly up
         viewDirection,                      // view Direction
