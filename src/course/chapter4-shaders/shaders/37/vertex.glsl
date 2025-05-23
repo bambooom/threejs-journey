@@ -1,6 +1,7 @@
 varying vec3 vNormal;
 varying vec3 vPosition;
 
+
 void main()
 {
     // Position

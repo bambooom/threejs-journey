@@ -147,6 +147,7 @@ const Page: FC = () => {
     const sizes = {
       width: window.innerWidth,
       height: window.innerHeight,
+      pixelRatio: Math.min(window.devicePixelRatio, 2),
     };
 
     const onResize = () => {
@@ -158,7 +159,7 @@ const Page: FC = () => {
       camera.updateProjectionMatrix();
       // Update renderer
       renderer.setSize(sizes.width, sizes.height);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setPixelRatio(sizes.pixelRatio);
     };
 
     window.addEventListener('resize', onResize);
@@ -188,7 +189,7 @@ const Page: FC = () => {
     });
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.setSize(sizes.width, sizes.height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(sizes.pixelRatio);
 
     /**
      * Animate
