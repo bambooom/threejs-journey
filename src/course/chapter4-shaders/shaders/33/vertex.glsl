@@ -3,7 +3,7 @@ varying vec3 vNormal;
 
 uniform float uTime;
 
-#include ./includes/random2D.glsl
+#include ../includes/random2D.glsl
 
 void main() {
   // Position

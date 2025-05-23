@@ -14,7 +14,7 @@ varying vec2 vUv;
 //   mat2 m = mat2(c, s, -s, c);
 //   return m * value;
 // }
-#include ./includes/rotate2D.glsl // split the shaders into chunks and include it when using
+#include ../includes/rotate2D.glsl // split the shaders into chunks and include it when using
 
 void main()
 {

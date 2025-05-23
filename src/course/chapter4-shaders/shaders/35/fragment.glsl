@@ -3,9 +3,9 @@ uniform vec3 uColor;
 varying vec3 vNormal;
 varying vec3 vPosition;
 
-#include ./includes/ambientLight.glsl
-#include ./includes/directionalLight.glsl
-#include ./includes/pointLight.glsl
+#include ../includes/ambientLight.glsl
+#include ../includes/directionalLight.glsl
+#include ../includes/pointLight.glsl
 
 
 
