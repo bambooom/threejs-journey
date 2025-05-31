@@ -98,6 +98,11 @@ export const courseStructure: Chapter[] = [
       { id: '36', title: 'Raging Sea Shading', path: '/36-raging-sea-shading' },
       { id: '37', title: 'Halftone Shading', path: '/37-halftone-shading' },
       { id: '38', title: 'Earth', path: '/38-earth' },
+      {
+        id: '39',
+        title: 'Particles Cursor Animation',
+        path: '/39-particles-cursor-animation',
+      },
     ],
   },
 ];
