@@ -103,6 +103,11 @@ export const courseStructure: Chapter[] = [
         title: 'Particles Cursor Animation',
         path: '/39-particles-cursor-animation',
       },
+      {
+        id: '40',
+        title: 'Particles Morphing',
+        path: '/40-particles-morphing',
+      },
     ],
   },
 ];
