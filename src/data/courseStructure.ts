@@ -108,6 +108,11 @@ export const courseStructure: Chapter[] = [
         title: 'Particles Morphing',
         path: '/40-particles-morphing',
       },
+      {
+        id: '41',
+        title: 'GPGPU Flow Field Particles',
+        path: '/41-gpgpu-flow-field-particles',
+      },
     ],
   },
 ];
