@@ -1,4 +1,4 @@
-import { type FC, useRef, useEffect, useState } from 'react';
+import { type FC, useRef, useEffect } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -12,7 +12,7 @@ import GUI from 'lil-gui';
 const Page: FC = () => {
   // Canvas
   const canvas = useRef<HTMLCanvasElement>(null);
-  const [modelLoaded, setModelLoaded] = useState(true); //@fixme
+  // const [modelLoaded, setModelLoaded] = useState(true); //@fixme - removed since not needed
 
   useEffect(() => {
     if (!canvas.current) return;
@@ -116,6 +116,21 @@ const Page: FC = () => {
     // It's a DataTexture which is similar to other Three.js textures but the pixels data is set up as an array which we can access in baseParticlesTexture.image.data
     // almost like an image
 
+    for (let i = 0; i < baseGeometry.count; i++) {
+      const i3 = i * 3;
+      const i4 = i * 4;
+
+      // Position based on geometry, rgba, 4x4
+      baseParticlesTexture.image.data[i4 + 0] =
+        baseGeometry.instance.attributes.position.array[i3 + 0];
+      baseParticlesTexture.image.data[i4 + 1] =
+        baseGeometry.instance.attributes.position.array[i3 + 1];
+      baseParticlesTexture.image.data[i4 + 2] =
+        baseGeometry.instance.attributes.position.array[i3 + 2];
+      baseParticlesTexture.image.data[i4 + 3] = 0;
+    }
+    // console.log(baseParticlesTexture.image.data); // FLoat32Array
+
     // GPUComputationRenderer works in a way where each type of data that will be computed is called a “variable”. In our case, we have only one variable and it’s the particles.
     // To create a variable, we send the base texture (baseParticlesTexture) that we created earlier. In addition, we need to send a shader that will update that texture.
 
@@ -154,9 +169,33 @@ const Page: FC = () => {
      * Particles
      */
     const particles: {
+      geometry?: THREE.BufferGeometry;
       material?: THREE.ShaderMaterial;
       points?: THREE.Points;
     } = {};
+
+    // Geometry
+    const particlesUvArray = new Float32Array(baseGeometry.count * 2); // we want uv coordinates for particles
+    for (let y = 0; y < gpgpu.size; y++) {
+      for (let x = 0; x < gpgpu.size; x++) {
+        const i = y * gpgpu.size + x;
+        const i2 = i * 2;
+
+        // Particles UV
+        const uvX = (x + 0.5) / gpgpu.size;
+        const uvY = (y + 0.5) / gpgpu.size;
+
+        particlesUvArray[i2 + 0] = uvX;
+        particlesUvArray[i2 + 1] = uvY;
+      }
+    }
+
+    particles.geometry = new THREE.BufferGeometry();
+    particles.geometry.setDrawRange(0, baseGeometry.count); // define a range of vertices:
+    particles.geometry.setAttribute(
+      'aParticlesUv',
+      new THREE.BufferAttribute(particlesUvArray, 2)
+    ); // set the uv coordinates
 
     // Material
     particles.material = new THREE.ShaderMaterial({
@@ -170,14 +209,12 @@ const Page: FC = () => {
             sizes.height * sizes.pixelRatio
           )
         ),
+        uParticlesTexture: new THREE.Uniform(null), // no need to provide params
       },
     });
 
     // Points
-    particles.points = new THREE.Points(
-      baseGeometry.instance,
-      particles.material
-    );
+    particles.points = new THREE.Points(particles.geometry, particles.material);
     scene.add(particles.points);
 
     /**
@@ -196,20 +233,24 @@ const Page: FC = () => {
     /**
      * Animate
      */
-    const clock = new THREE.Clock();
-    let previousTime = 0;
+    // const clock = new THREE.Clock();
+    // let previousTime = 0;
 
     const tick = () => {
-      const elapsedTime = clock.getElapsedTime();
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const deltaTime = elapsedTime - previousTime;
-      previousTime = elapsedTime;
+      // const elapsedTime = clock.getElapsedTime();
+      // const deltaTime = elapsedTime - previousTime;
+      // previousTime = elapsedTime;
 
       // Update controls
       controls.update();
 
       // GPGPU Update
       gpgpu.computation.compute();
+      // update material by texture
+      particles.material!.uniforms.uParticlesTexture.value =
+        gpgpu.computation.getCurrentRenderTarget(
+          gpgpu.particlesVariable
+        ).texture;
 
       // Render
       renderer.render(scene, camera);
@@ -218,9 +259,8 @@ const Page: FC = () => {
       window.requestAnimationFrame(tick);
     };
 
-    if (modelLoaded) {
-      tick();
-    }
+    // Start the animation loop
+    tick();
 
     return () => {
       window.removeEventListener('resize', onResize);
@@ -229,7 +269,7 @@ const Page: FC = () => {
       renderer.dispose();
       gui.destroy();
     };
-  }, [canvas.current, modelLoaded]);
+  }, [canvas.current]);
 
   return <canvas ref={canvas}></canvas>;
 };
