@@ -3,8 +3,10 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+import { GPUComputationRenderer } from 'three/addons/misc/GPUComputationRenderer.js';
 import particlesVertexShader from './shaders/41/particles/vertex.glsl';
 import particlesFragmentShader from './shaders/41/particles/fragment.glsl';
+import gpgpuParticlesShader from './shaders/41/gpgpu/particles.glsl';
 import GUI from 'lil-gui';
 
 const Page: FC = () => {
@@ -43,13 +45,11 @@ const Page: FC = () => {
       sizes.height = window.innerHeight;
       sizes.pixelRatio = Math.min(window.devicePixelRatio, 2);
 
-      // update material
-      if (particles) {
-        particles.material?.uniforms.uResolution.value.set(
-          sizes.width * sizes.pixelRatio,
-          sizes.height * sizes.pixelRatio
-        );
-      }
+      // Materials
+      particles.material?.uniforms.uResolution.value.set(
+        sizes.width * sizes.pixelRatio,
+        sizes.height * sizes.pixelRatio
+      );
 
       // Update camera
       camera.aspect = sizes.width / sizes.height;
@@ -91,16 +91,72 @@ const Page: FC = () => {
     renderer.setClearColor(debugObject.clearColor);
 
     /**
+     * Base geometry
+     */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const baseGeometry: Record<string, any> = {
+      instance: new THREE.SphereGeometry(3),
+    };
+    baseGeometry.count = baseGeometry.instance.attributes.position.count;
+
+    /**
+     * GPU Compute
+     */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const gpgpu: Record<string, any> = {};
+    gpgpu.size = Math.ceil(Math.sqrt(baseGeometry.count)); // the size of the texture
+    gpgpu.computation = new GPUComputationRenderer(
+      gpgpu.size,
+      gpgpu.size,
+      renderer
+    );
+
+    // Base particles
+    const baseParticlesTexture = gpgpu.computation.createTexture();
+    // It's a DataTexture which is similar to other Three.js textures but the pixels data is set up as an array which we can access in baseParticlesTexture.image.data
+    // almost like an image
+
+    // GPUComputationRenderer works in a way where each type of data that will be computed is called a “variable”. In our case, we have only one variable and it’s the particles.
+    // To create a variable, we send the base texture (baseParticlesTexture) that we created earlier. In addition, we need to send a shader that will update that texture.
+
+    // Particles variable
+    gpgpu.particlesVariable = gpgpu.computation.addVariable(
+      'uParticles', // name we choose for the texture
+      gpgpuParticlesShader,
+      baseParticlesTexture
+    );
+    // The “variable” needs to be re-injected into itself.
+    gpgpu.computation.setVariableDependencies(gpgpu.particlesVariable, [
+      gpgpu.particlesVariable,
+    ]); // second parameter is an array containing the dependencies
+    // so we create a loop, which allows us to keep on sending and updating the same texture
+
+    // Init
+    gpgpu.computation.init();
+
+    // Debug
+    gpgpu.debug = new THREE.Mesh(
+      new THREE.PlaneGeometry(3, 3),
+      new THREE.MeshBasicMaterial({
+        map: gpgpu.computation.getCurrentRenderTarget(gpgpu.particlesVariable)
+          .texture,
+      })
+    );
+    gpgpu.debug.position.x = 3;
+    scene.add(gpgpu.debug);
+
+    // We want to apply the GPUComputationRenderer output texture to that plane and we can access it using the getCurrentRenderTarget()
+    // console.log(
+    //   gpgpu.computation.getCurrentRenderTarget(gpgpu.particlesVariable).texture
+    // ); // output WebGLRenderTarget
+
+    /**
      * Particles
      */
     const particles: {
-      geometry?: THREE.BufferGeometry;
       material?: THREE.ShaderMaterial;
       points?: THREE.Points;
     } = {};
-
-    // Geometry
-    particles.geometry = new THREE.SphereGeometry(3);
 
     // Material
     particles.material = new THREE.ShaderMaterial({
@@ -118,7 +174,10 @@ const Page: FC = () => {
     });
 
     // Points
-    particles.points = new THREE.Points(particles.geometry, particles.material);
+    particles.points = new THREE.Points(
+      baseGeometry.instance,
+      particles.material
+    );
     scene.add(particles.points);
 
     /**
@@ -148,6 +207,9 @@ const Page: FC = () => {
 
       // Update controls
       controls.update();
+
+      // GPGPU Update
+      gpgpu.computation.compute();
 
       // Render
       renderer.render(scene, camera);
