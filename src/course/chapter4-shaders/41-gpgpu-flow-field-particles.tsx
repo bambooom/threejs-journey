@@ -1,7 +1,10 @@
-import { type FC, useRef, useEffect } from 'react';
+import { type FC, useRef, useEffect, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import {
+  GLTFLoader,
+  type GLTF,
+} from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { GPUComputationRenderer } from 'three/addons/misc/GPUComputationRenderer.js';
 import particlesVertexShader from './shaders/41/particles/vertex.glsl';
@@ -12,7 +15,8 @@ import GUI from 'lil-gui';
 const Page: FC = () => {
   // Canvas
   const canvas = useRef<HTMLCanvasElement>(null);
-  // const [modelLoaded, setModelLoaded] = useState(true); //@fixme - removed since not needed
+  const [modelLoaded, setModelLoaded] = useState(false);
+  const model = useRef<GLTF | null>(null);
 
   useEffect(() => {
     if (!canvas.current) return;
@@ -91,11 +95,23 @@ const Page: FC = () => {
     renderer.setClearColor(debugObject.clearColor);
 
     /**
-     * Base geometry
+     * Load model first
      */
+    gltfLoader.load('/models/boat.glb', (gltf) => {
+      model.current = gltf;
+      // Set model loaded state to trigger useEffect re-run
+      setModelLoaded(true);
+    });
+
+    // Early return if model not loaded yet
+    if (!modelLoaded || !model.current) {
+      return;
+    }
+
+    // Use loaded model geometry
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const baseGeometry: Record<string, any> = {
-      instance: new THREE.SphereGeometry(3),
+      instance: (model.current.scene.children[0] as THREE.Mesh).geometry,
     };
     baseGeometry.count = baseGeometry.instance.attributes.position.count;
 
@@ -127,7 +143,7 @@ const Page: FC = () => {
         baseGeometry.instance.attributes.position.array[i3 + 1];
       baseParticlesTexture.image.data[i4 + 2] =
         baseGeometry.instance.attributes.position.array[i3 + 2];
-      baseParticlesTexture.image.data[i4 + 3] = 0;
+      baseParticlesTexture.image.data[i4 + 3] = Math.random(); // different lifespan
     }
     // console.log(baseParticlesTexture.image.data); // FLoat32Array
 
@@ -146,6 +162,19 @@ const Page: FC = () => {
     ]); // second parameter is an array containing the dependencies
     // so we create a loop, which allows us to keep on sending and updating the same texture
 
+    // Uniforms
+    gpgpu.particlesVariable.material.uniforms.uTime = new THREE.Uniform(0);
+    gpgpu.particlesVariable.material.uniforms.uDeltaTime = new THREE.Uniform(0);
+    gpgpu.particlesVariable.material.uniforms.uBase = new THREE.Uniform(
+      baseParticlesTexture
+    ); // send original texture
+    gpgpu.particlesVariable.material.uniforms.uFlowFieldInfluence =
+      new THREE.Uniform(0.5);
+    gpgpu.particlesVariable.material.uniforms.uFlowFieldStrength =
+      new THREE.Uniform(2);
+    gpgpu.particlesVariable.material.uniforms.uFlowFieldFrequency =
+      new THREE.Uniform(0.5);
+
     // Init
     gpgpu.computation.init();
 
@@ -157,6 +186,7 @@ const Page: FC = () => {
           .texture,
       })
     );
+    gpgpu.debug.visible = false; // hide debug plane
     gpgpu.debug.position.x = 3;
     scene.add(gpgpu.debug);
 
@@ -176,6 +206,7 @@ const Page: FC = () => {
 
     // Geometry
     const particlesUvArray = new Float32Array(baseGeometry.count * 2); // we want uv coordinates for particles
+    const sizesArray = new Float32Array(baseGeometry.count);
     for (let y = 0; y < gpgpu.size; y++) {
       for (let x = 0; x < gpgpu.size; x++) {
         const i = y * gpgpu.size + x;
@@ -187,6 +218,9 @@ const Page: FC = () => {
 
         particlesUvArray[i2 + 0] = uvX;
         particlesUvArray[i2 + 1] = uvY;
+
+        // random Sizes
+        sizesArray[i] = Math.random();
       }
     }
 
@@ -196,13 +230,21 @@ const Page: FC = () => {
       'aParticlesUv',
       new THREE.BufferAttribute(particlesUvArray, 2)
     ); // set the uv coordinates
+    particles.geometry.setAttribute(
+      'aColor',
+      baseGeometry.instance.attributes.color
+    ); // color already in model
+    particles.geometry.setAttribute(
+      'aSize',
+      new THREE.BufferAttribute(sizesArray, 1)
+    ); // sizes array
 
     // Material
     particles.material = new THREE.ShaderMaterial({
       vertexShader: particlesVertexShader,
       fragmentShader: particlesFragmentShader,
       uniforms: {
-        uSize: new THREE.Uniform(0.4),
+        uSize: new THREE.Uniform(0.07),
         uResolution: new THREE.Uniform(
           new THREE.Vector2(
             sizes.width * sizes.pixelRatio,
@@ -229,22 +271,49 @@ const Page: FC = () => {
       .max(1)
       .step(0.001)
       .name('uSize');
+    gui
+      .add(
+        gpgpu.particlesVariable.material.uniforms.uFlowFieldInfluence,
+        'value'
+      )
+      .min(0)
+      .max(1)
+      .name('uFlowFieldInfluence');
+    gui
+      .add(
+        gpgpu.particlesVariable.material.uniforms.uFlowFieldStrength,
+        'value'
+      )
+      .min(0)
+      .max(10)
+      .name('uFlowFieldStrength');
+    gui
+      .add(
+        gpgpu.particlesVariable.material.uniforms.uFlowFieldFrequency,
+        'value'
+      )
+      .min(0)
+      .max(1)
+      .step(0.001)
+      .name('uFlowFieldStrength');
 
     /**
      * Animate
      */
-    // const clock = new THREE.Clock();
-    // let previousTime = 0;
+    const clock = new THREE.Clock();
+    let previousTime = 0;
 
     const tick = () => {
-      // const elapsedTime = clock.getElapsedTime();
-      // const deltaTime = elapsedTime - previousTime;
-      // previousTime = elapsedTime;
+      const elapsedTime = clock.getElapsedTime();
+      const deltaTime = elapsedTime - previousTime;
+      previousTime = elapsedTime;
 
       // Update controls
       controls.update();
 
       // GPGPU Update
+      gpgpu.particlesVariable.material.uniforms.uTime.value = elapsedTime; // before compute
+      gpgpu.particlesVariable.material.uniforms.uDeltaTime.value = deltaTime; // use deltatime to solve different on different device frame rate
       gpgpu.computation.compute();
       // update material by texture
       particles.material!.uniforms.uParticlesTexture.value =
@@ -259,8 +328,7 @@ const Page: FC = () => {
       window.requestAnimationFrame(tick);
     };
 
-    // Start the animation loop
-    tick();
+    if (modelLoaded) tick();
 
     return () => {
       window.removeEventListener('resize', onResize);
@@ -269,7 +337,7 @@ const Page: FC = () => {
       renderer.dispose();
       gui.destroy();
     };
-  }, [canvas.current]);
+  }, [modelLoaded]); // Re-run when model loads
 
   return <canvas ref={canvas}></canvas>;
 };
