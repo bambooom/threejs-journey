@@ -113,6 +113,11 @@ export const courseStructure: Chapter[] = [
         title: 'GPGPU Flow Field Particles',
         path: '/41-gpgpu-flow-field-particles',
       },
+      {
+        id: '42',
+        title: 'Wobbly Sphere',
+        path: '/42-wobbly-sphere-shader',
+      },
     ],
   },
 ];
