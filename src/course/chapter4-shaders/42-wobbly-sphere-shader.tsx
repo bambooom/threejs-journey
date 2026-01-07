@@ -17,7 +17,7 @@ const Page: FC = () => {
   // Canvas
   const canvas = useRef<HTMLCanvasElement>(null);
   const [modelLoaded, setModelLoaded] = useState(false);
-  const model = useRef<GLTF | null>(null);
+  // const model = useRef<GLTF | null>(null);
 
   useEffect(() => {
     if (!canvas.current) return;
@@ -52,12 +52,31 @@ const Page: FC = () => {
     /**
      * Wobble
      */
+    debugObject.colorA = '#0000ff';
+    debugObject.colorB = '#ff0000';
+
+    const uniforms = {
+      uTime: new THREE.Uniform(0),
+
+      uPositionFrequency: new THREE.Uniform(0.5),
+      uTimeFrequency: new THREE.Uniform(0.4),
+      uStrength: new THREE.Uniform(0.3),
+
+      uWarpPositionFrequency: new THREE.Uniform(0.38),
+      uWarpTimeFrequency: new THREE.Uniform(0.12),
+      uWarpStrength: new THREE.Uniform(1.7),
+
+      uColorA: new THREE.Uniform(new THREE.Color(debugObject.colorA)),
+      uColorB: new THREE.Uniform(new THREE.Color(debugObject.colorB)),
+    };
+
     // Material
     const material = new CustomShaderMaterial({
       // CSM
       baseMaterial: THREE.MeshPhysicalMaterial,
       vertexShader: wobbleVertexShader,
       fragmentShader: wobbleFragmentShader,
+      uniforms,
 
       // MeshPhysicalMaterial
       metalness: 0,
@@ -70,26 +89,74 @@ const Page: FC = () => {
       wireframe: false,
     });
 
+    // this material is used for the shadows rendering
+    const depthMaterial = new CustomShaderMaterial({
+      // CSM
+      baseMaterial: THREE.MeshDepthMaterial,
+      vertexShader: wobbleVertexShader,
+      uniforms,
+      // no need fragment shader
+      // silent: true,
+
+      // MeshDepthMaterial
+      depthPacking: THREE.RGBADepthPacking, // encode the depth in all 4 channels instead of grayscale depth to improve the precisiton
+    });
+
     // Tweaks
+    gui
+      .add(uniforms.uPositionFrequency, 'value', 0, 2, 0.001)
+      .name('uPositionFrequency');
+    gui
+      .add(uniforms.uTimeFrequency, 'value', 0, 2, 0.001)
+      .name('uTimeFrequency');
+    gui.add(uniforms.uStrength, 'value', 0, 1, 0.001).name('uStrength');
+    gui
+      .add(uniforms.uWarpPositionFrequency, 'value', 0, 2, 0.001)
+      .name('uPositionFrequency');
+    gui
+      .add(uniforms.uWarpTimeFrequency, 'value', 0, 2, 0.001)
+      .name('uTimeFrequency');
+    gui.add(uniforms.uWarpStrength, 'value', 0, 2, 0.001).name('uWarpStrength');
+
+    gui.addColor(debugObject, 'colorA').onChange(() => {
+      uniforms.uColorA.value.set(debugObject.colorA);
+    });
+    gui.addColor(debugObject, 'colorB').onChange(() => {
+      uniforms.uColorB.value.set(debugObject.colorB);
+    });
+
     gui.add(material, 'metalness', 0, 1, 0.001);
     gui.add(material, 'roughness', 0, 1, 0.001);
     gui.add(material, 'transmission', 0, 1, 0.001);
     gui.add(material, 'ior', 0, 10, 0.001);
     gui.add(material, 'thickness', 0, 10, 0.001);
-    gui.addColor(material, 'color');
 
     // Geometry
-    const geometry = mergeVertices(new THREE.IcosahedronGeometry(2.5, 50));
-    geometry.computeTangents();
+    // const geometry = mergeVertices(new THREE.IcosahedronGeometry(2.5, 50));
+    // geometry.computeTangents();
     // console.log(geometry.attributes); // normal, position, uv
     // after mergeVertices, we get index for the geometry,
     // so we can compute the tangents, the above log will contain normal, position, uv, tangent
 
     // Mesh
-    const wobble = new THREE.Mesh(geometry, material);
-    wobble.receiveShadow = true;
-    wobble.castShadow = true;
-    scene.add(wobble);
+    // const wobble = new THREE.Mesh(geometry, material);
+    // wobble.customDepthMaterial = depthMaterial; // Update the depth material, make the shadows on plane correct
+    // wobble.receiveShadow = true;
+    // wobble.castShadow = true;
+    // scene.add(wobble);
+
+    // Model
+    let suzanne: THREE.Mesh | null = null;
+    gltfLoader.load('/models/suzanneWobble.glb', (gltf) => {
+      suzanne = gltf.scene.children[0] as THREE.Mesh;
+      suzanne.receiveShadow = true;
+      suzanne.castShadow = true;
+      suzanne.material = material;
+      suzanne.customDepthMaterial = depthMaterial;
+
+      scene.add(suzanne);
+      setModelLoaded(true);
+    });
 
     /**
      * Plane
@@ -179,6 +246,9 @@ const Page: FC = () => {
 
     const tick = () => {
       const elapsedTime = clock.getElapsedTime();
+
+      // Material
+      uniforms.uTime.value = elapsedTime;
 
       // Update controls
       controls.update();
