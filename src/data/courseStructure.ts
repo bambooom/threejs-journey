@@ -118,6 +118,11 @@ export const courseStructure: Chapter[] = [
         title: 'Wobbly Sphere',
         path: '/42-wobbly-sphere-shader',
       },
+      {
+        id: '43',
+        title: 'Sliced Model',
+        path: '/43-sliced-model-shader',
+      },
     ],
   },
 ];
