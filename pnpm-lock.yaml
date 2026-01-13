@@ -44,6 +44,9 @@ importers:
       three:
         specifier: ^0.176.0
         version: 0.176.0
+      three-bvh-csg:
+        specifier: ^0.0.17
+        version: 0.0.17(three-mesh-bvh@0.9.5(three@0.176.0))(three@0.176.0)
       three-custom-shader-material:
         specifier: ^6.4.0
         version: 6.4.0(react@19.1.0)(three@0.176.0)
@@ -1437,6 +1440,12 @@ packages:
     resolution: {integrity: sha512-GNzQvQTOIP6RyTfE2Qxb8ZVlNmw0n88vp1szwWRimP02mnTsx3Wtn5qRdqY9w2XduFNUgvOwhNnQsjwCp+kqaQ==}
     engines: {node: '>=6'}
 
+  three-bvh-csg@0.0.17:
+    resolution: {integrity: sha512-iEkHDF8GRfGM6593Cuw8SnF1vfENCp46gIAtRzuL4nGXGWPcR1sbTBwM9ptDONb5twqlZp5WkAKya5aBKe2qcA==}
+    peerDependencies:
+      three: '>=0.151.0'
+      three-mesh-bvh: '>=0.6.6'
+
   three-custom-shader-material@6.4.0:
     resolution: {integrity: sha512-dIbkwX1P4DcHMOZrywW+/TDp5qJhlyU6NP/2kmHw91UqC+TrK4JSBtAV3qGc6UnkqSOmR1i0O+Yz5EnTp2aQ1g==}
     peerDependencies:
@@ -1448,6 +1457,11 @@ packages:
         optional: true
       react:
         optional: true
+
+  three-mesh-bvh@0.9.5:
+    resolution: {integrity: sha512-MYpwzUWDxPAKGhSBFin9E/7K4AAHyIm4IfMZQ/3+Z/jq/swa2dAhXx0yUNDd9mjlhLuzXkMBTGDZioL2GSlIfQ==}
+    peerDependencies:
+      three: '>= 0.159.0'
 
   three@0.176.0:
     resolution: {integrity: sha512-PWRKYWQo23ojf9oZSlRGH8K09q7nRSWx6LY/HF/UUrMdYgN9i1e2OwJYHoQjwc6HF/4lvvYLC5YC1X8UJL2ZpA==}
@@ -2737,11 +2751,20 @@ snapshots:
 
   tapable@2.2.1: {}
 
+  three-bvh-csg@0.0.17(three-mesh-bvh@0.9.5(three@0.176.0))(three@0.176.0):
+    dependencies:
+      three: 0.176.0
+      three-mesh-bvh: 0.9.5(three@0.176.0)
+
   three-custom-shader-material@6.4.0(react@19.1.0)(three@0.176.0):
     dependencies:
       three: 0.176.0
     optionalDependencies:
       react: 19.1.0
+
+  three-mesh-bvh@0.9.5(three@0.176.0):
+    dependencies:
+      three: 0.176.0
 
   three@0.176.0: {}
 

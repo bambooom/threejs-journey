@@ -123,6 +123,11 @@ export const courseStructure: Chapter[] = [
         title: 'Sliced Model',
         path: '/43-sliced-model-shader',
       },
+      {
+        id: '44',
+        title: 'Procedural Terrain',
+        path: '/44-procedural-terrain-shader',
+      },
     ],
   },
 ];
