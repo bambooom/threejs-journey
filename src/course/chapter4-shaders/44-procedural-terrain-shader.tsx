@@ -1,4 +1,4 @@
-import { type FC, useRef, useEffect, useState } from 'react';
+import { type FC, useRef, useEffect } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
