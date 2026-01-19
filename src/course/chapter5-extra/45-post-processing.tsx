@@ -12,7 +12,6 @@ import { GammaCorrectionShader } from 'three/examples/jsm/Addons.js';
 import { SMAAPass } from 'three/examples/jsm/Addons.js';
 import { UnrealBloomPass } from 'three/examples/jsm/Addons.js';
 import GUI from 'lil-gui';
-import { uniform } from 'three/tsl';
 
 const Page: FC = () => {
   const canvas = useRef<HTMLCanvasElement>(null);
@@ -131,7 +130,7 @@ const Page: FC = () => {
       75,
       sizes.width / sizes.height,
       0.1,
-      100
+      100,
     );
     camera.position.set(4, 1, -4);
     scene.add(camera);
@@ -194,7 +193,7 @@ const Page: FC = () => {
       new THREE.Vector2(sizes.width, sizes.height),
       0.3,
       1,
-      0.6
+      0.6,
     );
     rgbShiftPass.enabled = false;
     effectComposer.addPass(unrealBloomPass);
@@ -305,7 +304,7 @@ const Page: FC = () => {
     const displacementPass = new ShaderPass(DisplacementShader);
     // displacementPass.material.uniforms.uTime.value = 0;
     displacementPass.material.uniforms.uNormalMap.value = textureLoader.load(
-      '/textures/interfaceNormalMap.png'
+      '/textures/interfaceNormalMap.png',
     );
     effectComposer.addPass(displacementPass);
 

@@ -21,6 +21,7 @@
     "react-router": "^7.5.3",
     "react-router-dom": "^7.5.3",
     "react-syntax-highlighter": "^15.6.1",
+    "stats.js": "^0.17.0",
     "three": "^0.176.0",
     "three-bvh-csg": "^0.0.17",
     "three-custom-shader-material": "^6.4.0"
@@ -30,6 +31,7 @@
     "@tailwindcss/vite": "^4.1.4",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
+    "@types/stats.js": "^0.17.4",
     "@types/three": "^0.176.0",
     "@vitejs/plugin-react-swc": "^3.9.0",
     "autoprefixer": "^10.4.21",

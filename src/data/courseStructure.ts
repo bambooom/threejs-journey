@@ -136,6 +136,7 @@ export const courseStructure: Chapter[] = [
     path: '/chapter5-extra',
     lessons: [
       { id: '45', title: 'Post Processing', path: '/45-post-processing' },
+      { id: '46', title: 'Performance Tips', path: '/46-performance-tips' },
     ],
   },
 ];
