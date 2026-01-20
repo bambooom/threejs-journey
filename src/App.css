@@ -29,3 +29,23 @@ section:nth-child(odd) {
   gap: 1rem;
   flex-direction: column;
 }
+
+.loading-bar {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  height: 2px;
+  background: #fff;
+  transform: scaleX(0);
+  /* changer the scale in js */
+  transform-origin: top left;
+  transition: transform 0.5s;
+  will-change: transform;
+}
+
+/* when loading ended, make the bar dispear to the right */
+.loading-bar.ended {
+  transform: scaleX(0) !important;
+  transform-origin: 100% 0;
+  transition: transform 1.5s ease-in-out;
+}

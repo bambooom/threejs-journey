@@ -1,0 +1,225 @@
+import { type FC, useRef, useEffect, useState } from 'react';
+import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import gsap from 'gsap';
+
+const Page: FC = () => {
+  const canvas = useRef<HTMLCanvasElement>(null);
+  // const [modelLoaded, setModelLoaded] = useState(false);
+  const loadingBar = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!canvas.current) return;
+    /**
+     * Loaders
+     */
+    const loadingManager = new THREE.LoadingManager(
+      // loaded
+      () => {
+        gsap.delayedCall(0.5, () => {
+          gsap.to(overlayMaterial.uniforms.uAlpha, { duration: 3, value: 0 });
+          loadingBar.current!.classList.add('ended');
+        });
+        // setTimeout(() => {
+        //   gsap.to(overlayMaterial.uniforms.uAlpha, { duration: 3, value: 0 });
+        //   loadingBar.current!.classList.add('ended');
+        // }, 500); // transition delay
+      },
+
+      // progress
+      (itemUrl, itemsLoaded, itemsTotal) => {
+        // console.log(
+        //   `Loading file: ${itemUrl}, Loaded ${itemsLoaded} of ${itemsTotal}`,
+        // );
+        // update the loading bar here
+        loadingBar.current!.style.transform = `scaleX(${itemsLoaded / itemsTotal})`;
+      },
+    );
+    const gltfLoader = new GLTFLoader(loadingManager);
+    const cubeTextureLoader = new THREE.CubeTextureLoader(loadingManager);
+
+    // Debug
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const debugObject: Record<string, any> = {};
+
+    // Scene
+    const scene = new THREE.Scene();
+
+    /**
+     * Overlay
+     */
+    // add an overlay always facing the camera, to show loading progress, and fade away if ready
+    // using vertex shader to make it always facing the camera
+    const overlayGeometry = new THREE.PlaneGeometry(2, 2, 1, 1); // 2x2 can cover the whole screen
+    const overlayMaterial = new THREE.ShaderMaterial({
+      transparent: true,
+      uniforms: {
+        uAlpha: { value: 1 },
+      },
+      vertexShader: `
+        void main() {
+          gl_Position = vec4(position, 1.0); // make the plane always facing the camera
+        }
+      `,
+      fragmentShader: `
+        uniform float uAlpha;
+
+        void main() {
+          gl_FragColor = vec4(0.0, 0.0, 0.0, uAlpha);
+        }
+      `,
+    });
+    const overlay = new THREE.Mesh(overlayGeometry, overlayMaterial);
+    scene.add(overlay);
+
+    /**
+     * Update all materials
+     */
+    const updateAllMaterials = () => {
+      scene.traverse((child) => {
+        if (
+          child instanceof THREE.Mesh &&
+          child.material instanceof THREE.MeshStandardMaterial
+        ) {
+          // child.material.envMap = environmentMap
+          child.material.envMapIntensity = debugObject.envMapIntensity;
+          child.material.needsUpdate = true;
+          child.castShadow = true;
+          child.receiveShadow = true;
+        }
+      });
+    };
+
+    /**
+     * Environment map
+     */
+    const environmentMap = cubeTextureLoader.load([
+      '/textures/environmentMaps/6/px.jpg',
+      '/textures/environmentMaps/6/nx.jpg',
+      '/textures/environmentMaps/6/py.jpg',
+      '/textures/environmentMaps/6/ny.jpg',
+      '/textures/environmentMaps/6/pz.jpg',
+      '/textures/environmentMaps/6/nz.jpg',
+    ]);
+
+    environmentMap.colorSpace = THREE.SRGBColorSpace;
+
+    scene.background = environmentMap;
+    scene.environment = environmentMap;
+
+    debugObject.envMapIntensity = 2.5;
+
+    /**
+     * Models
+     */
+    gltfLoader.load('/models/FlightHelmet/glTF/FlightHelmet.gltf', (gltf) => {
+      gltf.scene.scale.set(10, 10, 10);
+      gltf.scene.position.set(0, -4, 0);
+      gltf.scene.rotation.y = Math.PI * 0.5;
+      scene.add(gltf.scene);
+
+      updateAllMaterials();
+    });
+
+    /**
+     * Lights
+     */
+    const directionalLight = new THREE.DirectionalLight('#ffffff', 3);
+    directionalLight.castShadow = true;
+    directionalLight.shadow.camera.far = 15;
+    directionalLight.shadow.mapSize.set(1024, 1024);
+    directionalLight.shadow.normalBias = 0.05;
+    directionalLight.position.set(0.25, 3, -2.25);
+    scene.add(directionalLight);
+
+    /**
+     * Sizes
+     */
+    const sizes = {
+      width: window.innerWidth,
+      height: window.innerHeight,
+      pixelRatio: Math.min(window.devicePixelRatio, 2),
+    };
+
+    const onResize = () => {
+      // Update sizes
+      sizes.width = window.innerWidth;
+      sizes.height = window.innerHeight;
+      sizes.pixelRatio = Math.min(window.devicePixelRatio, 2);
+
+      // Update camera
+      camera.aspect = sizes.width / sizes.height;
+      camera.updateProjectionMatrix();
+
+      // Update renderer
+      renderer.setSize(sizes.width, sizes.height);
+      renderer.setPixelRatio(sizes.pixelRatio);
+    };
+
+    window.addEventListener('resize', onResize);
+
+    /**
+     * Camera
+     */
+    // Base camera
+    const camera = new THREE.PerspectiveCamera(
+      75,
+      sizes.width / sizes.height,
+      0.1,
+      100,
+    );
+    camera.position.set(4, 1, -4);
+    scene.add(camera);
+
+    // Controls
+    const controls = new OrbitControls(camera, canvas.current);
+    controls.enableDamping = true;
+
+    /**
+     * Renderer
+     */
+    const renderer = new THREE.WebGLRenderer({
+      canvas: canvas.current,
+      antialias: true,
+    });
+    renderer.toneMapping = THREE.ReinhardToneMapping;
+    renderer.toneMappingExposure = 3;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.setSize(sizes.width, sizes.height);
+    renderer.setPixelRatio(sizes.pixelRatio);
+
+    /**
+     * Animate
+     */
+
+    const tick = () => {
+      // Update controls
+      controls.update();
+
+      // Render
+      renderer.render(scene, camera);
+
+      // Call tick again on the next frame
+      window.requestAnimationFrame(tick);
+    };
+
+    tick();
+
+    return () => {
+      window.removeEventListener('resize', onResize);
+      scene.clear();
+      renderer.dispose();
+    };
+  }, []);
+
+  return (
+    <>
+      <canvas className="webgl" ref={canvas}></canvas>
+      <div className="loading-bar" ref={loadingBar}></div>
+    </>
+  );
+};
+
+export default Page;
