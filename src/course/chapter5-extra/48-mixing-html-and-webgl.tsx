@@ -1,4 +1,4 @@
-import { type FC, useRef, useEffect } from 'react';
+import { type FC, useRef, useEffect, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
@@ -6,8 +6,8 @@ import gsap from 'gsap';
 
 const Page: FC = () => {
   const canvas = useRef<HTMLCanvasElement>(null);
-  // const [modelLoaded, setModelLoaded] = useState(false);
   const loadingBar = useRef<HTMLDivElement>(null);
+  let sceneReady = false;
 
   useEffect(() => {
     if (!canvas.current) return;
@@ -21,6 +21,9 @@ const Page: FC = () => {
           gsap.to(overlayMaterial.uniforms.uAlpha, { duration: 3, value: 0 });
           loadingBar.current!.classList.add('ended');
         });
+        setTimeout(() => {
+          sceneReady = true;
+        }, 2000);
         // setTimeout(() => {
         //   gsap.to(overlayMaterial.uniforms.uAlpha, { duration: 3, value: 0 });
         //   loadingBar.current!.classList.add('ended');
@@ -39,6 +42,9 @@ const Page: FC = () => {
     const gltfLoader = new GLTFLoader(loadingManager);
     const cubeTextureLoader = new THREE.CubeTextureLoader(loadingManager);
 
+    /**
+     * Base
+     */
     // Debug
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const debugObject: Record<string, any> = {};
@@ -113,14 +119,31 @@ const Page: FC = () => {
     /**
      * Models
      */
-    gltfLoader.load('/models/FlightHelmet/glTF/FlightHelmet.gltf', (gltf) => {
-      gltf.scene.scale.set(10, 10, 10);
-      gltf.scene.position.set(0, -4, 0);
+    gltfLoader.load('/models/DamagedHelmet/glTF/DamagedHelmet.gltf', (gltf) => {
+      gltf.scene.scale.set(2.5, 2.5, 2.5);
       gltf.scene.rotation.y = Math.PI * 0.5;
       scene.add(gltf.scene);
 
       updateAllMaterials();
     });
+
+    /**
+     * Points of interest
+     */
+    const points = [
+      {
+        position: new THREE.Vector3(1.55, 0.3, -0.6),
+        element: document.querySelector('.point-0') as HTMLElement,
+      },
+      {
+        position: new THREE.Vector3(0.5, 0.8, -1.6),
+        element: document.querySelector('.point-1') as HTMLElement,
+      },
+      {
+        position: new THREE.Vector3(1.6, -1.3, -0.7),
+        element: document.querySelector('.point-2') as HTMLElement,
+      },
+    ];
 
     /**
      * Lights
@@ -193,10 +216,43 @@ const Page: FC = () => {
     /**
      * Animate
      */
+    const raycaster = new THREE.Raycaster();
 
     const tick = () => {
       // Update controls
       controls.update();
+      if (sceneReady) {
+        // update points of interest
+        for (const p of points) {
+          // we need to get 2D screen position of the 3D scene position of the point
+          const screenPosition = p.position.clone(); // not affect the original position
+          screenPosition.project(camera);
+
+          raycaster.setFromCamera(
+            new THREE.Vector2(screenPosition.x, screenPosition.y),
+            camera,
+          );
+          const intersects = raycaster.intersectObjects(scene.children, true);
+
+          if (intersects.length === 0) {
+            p.element.classList.add('visible'); // no intersects, nothing blocking it
+          } else {
+            const intersectionDistance = intersects[0].distance;
+            const pointDistance = p.position.distanceTo(camera.position);
+
+            if (intersectionDistance < pointDistance) {
+              p.element.classList.remove('visible'); // intersected by something else, blocking by something, so not visible
+            } else {
+              p.element.classList.add('visible'); // intersected, but the point is closer to the camera than the intersection, so visible
+            }
+          }
+
+          const translateX = (screenPosition.x * sizes.width) / 2;
+          const translateY = (-screenPosition.y * sizes.height) / 2; // -screenPosition.y because y is inverted in 3D
+
+          p.element.style.transform = `translate(${translateX}px, ${translateY}px)`;
+        }
+      }
 
       // Render
       renderer.render(scene, camera);
@@ -218,6 +274,26 @@ const Page: FC = () => {
     <>
       <canvas className="webgl" ref={canvas}></canvas>
       <div className="loading-bar" ref={loadingBar}></div>
+      <div className="point point-0">
+        <div className="label">1</div>
+        <div className="text">
+          Front and top screen with HUD aggregating terrain and battle
+          informations.
+        </div>
+      </div>
+      <div className="point point-1">
+        <div className="label">2</div>
+        <div className="text">
+          Ventilation with air purifier and detection of environment toxicity.
+        </div>
+      </div>
+      <div className="point point-2">
+        <div className="label">3</div>
+        <div className="text">
+          Cameras supporting night vision and heat vision with automatic
+          adjustment.
+        </div>
+      </div>
     </>
   );
 };

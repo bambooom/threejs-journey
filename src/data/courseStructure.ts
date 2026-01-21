@@ -142,6 +142,11 @@ export const courseStructure: Chapter[] = [
         title: 'Intro and Loading Progress',
         path: '/47-intro-and-loading-progress',
       },
+      {
+        id: '48',
+        title: 'Mixing HTML and WebGL',
+        path: '/48-mixing-html-and-webgl',
+      },
     ],
   },
 ];
