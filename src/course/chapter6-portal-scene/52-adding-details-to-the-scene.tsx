@@ -7,6 +7,9 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 
+import firefliesVertexShader from './shaders/fireflies/vertex.glsl';
+import firefliesFragmentShader from './shaders/fireflies/fragment.glsl';
+
 // /**
 //  * Spector JS
 //  */
@@ -95,6 +98,64 @@ const Page: FC = () => {
     });
 
     /**
+     * Fireflies, using particles
+     */
+    // Geometry
+    const firefliesGeometry = new THREE.BufferGeometry();
+    const firefliesCount = 30;
+    const positionsArray = new Float32Array(firefliesCount * 3);
+    const scaleArray = new Float32Array(firefliesCount);
+
+    for (let i = 0; i < firefliesCount * 3; i++) {
+      positionsArray[i * 3] = (Math.random() - 0.5) * 4;
+      positionsArray[i * 3 + 1] = Math.random() * 4;
+      positionsArray[i * 3 + 2] = (Math.random() - 0.5) * 4;
+
+      scaleArray[i] = Math.random();
+    }
+
+    firefliesGeometry.setAttribute(
+      'position',
+      new THREE.BufferAttribute(positionsArray, 3),
+    );
+    firefliesGeometry.setAttribute(
+      'aScale',
+      new THREE.BufferAttribute(scaleArray, 1),
+    );
+
+    // Material
+    // const firefliesMaterial = new THREE.PointsMaterial({
+    //   size: 0.1,
+    //   sizeAttenuation: true,
+    // });
+
+    // changes to use custom shaders
+    const firefliesMaterial = new THREE.ShaderMaterial({
+      uniforms: {
+        uTime: { value: 0 },
+        uPixelRatio: { value: Math.min(window.devicePixelRatio, 2) },
+        uSize: { value: 150 },
+      },
+      vertexShader: firefliesVertexShader,
+      fragmentShader: firefliesFragmentShader,
+
+      transparent: true,
+      depthWrite: false, // fix some clipping issues
+      blending: THREE.AdditiveBlending, // bad for performance, but looks nice
+    });
+
+    gui
+      .add(firefliesMaterial.uniforms.uSize, 'value')
+      .min(0)
+      .max(500)
+      .step(1)
+      .name('firefliesSize');
+
+    // Points
+    const fireflies = new THREE.Points(firefliesGeometry, firefliesMaterial);
+    scene.add(fireflies);
+
+    /**
      * Sizes
      */
     const sizes = {
@@ -116,6 +177,12 @@ const Page: FC = () => {
       // Update renderer
       renderer.setSize(sizes.width, sizes.height);
       renderer.setPixelRatio(sizes.pixelRatio);
+
+      // Update fireflies
+      firefliesMaterial.uniforms.uPixelRatio.value = Math.min(
+        window.devicePixelRatio,
+        2,
+      );
     };
 
     window.addEventListener('resize', onResize);
@@ -160,9 +227,12 @@ const Page: FC = () => {
     /**
      * Animate
      */
-    // const clock = new THREE.Clock();
+    const clock = new THREE.Clock();
     const tick = () => {
-      // const elapsedTime = clock.getElapsedTime();
+      const elapsedTime = clock.getElapsedTime();
+
+      // Update fireflies materials
+      firefliesMaterial.uniforms.uTime.value = elapsedTime;
 
       // Update controls
       controls.update();
