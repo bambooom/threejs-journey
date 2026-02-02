@@ -149,6 +149,18 @@ export const courseStructure: Chapter[] = [
       },
     ],
   },
+  {
+    id: 'chapter6',
+    title: 'Chapter 6: Portal Scene',
+    path: '/chapter6-portal-scene',
+    lessons: [
+      {
+        id: '51',
+        title: 'Importing and Optimizing the Scene',
+        path: '/51-importing-and-optimizing-the-scene',
+      },
+    ],
+  },
 ];
 
 export type { Lesson, Chapter };
