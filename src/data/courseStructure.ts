@@ -159,6 +159,11 @@ export const courseStructure: Chapter[] = [
         title: 'Importing and Optimizing the Scene',
         path: '/51-importing-and-optimizing-the-scene',
       },
+      {
+        id: '52',
+        title: 'Adding details to the scene',
+        path: '/52-adding-details-to-the-scene',
+      },
     ],
   },
 ];

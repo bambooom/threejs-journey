@@ -1,3 +1,5 @@
+// 49 & 50 are lessons for building the model in Blender, so no web coding
+
 import { type FC, useRef, useEffect, useState } from 'react';
 import GUI from 'lil-gui';
 import * as THREE from 'three';
@@ -122,12 +124,12 @@ const Page: FC = () => {
      */
     // Base camera
     const camera = new THREE.PerspectiveCamera(
-      75,
+      45,
       sizes.width / sizes.height,
       0.1,
       100,
     );
-    camera.position.set(4, 1, -4);
+    camera.position.set(4, 2, 4);
     scene.add(camera);
 
     // Controls
