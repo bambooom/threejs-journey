@@ -24,9 +24,7 @@ void main()
     // Mix colors to final color
     vec3 color = mix(uColorStart, uColorEnd, strength);
 
-    // gl_FragColor = vec4(color, 1.0);
-
-    gl_FragColor = vec4(0.0, 0.0, 1.0, 1.0);
+    gl_FragColor = vec4(color, 1.0);
 
     #include <colorspace_fragment>
 }
