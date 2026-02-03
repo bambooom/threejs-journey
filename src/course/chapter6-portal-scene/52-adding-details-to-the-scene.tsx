@@ -9,6 +9,8 @@ import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 
 import firefliesVertexShader from './shaders/fireflies/vertex.glsl';
 import firefliesFragmentShader from './shaders/fireflies/fragment.glsl';
+import portalVertexShader from './shaders/portal/vertex.glsl';
+import portalFragmentShader from './shaders/portal/fragment.glsl';
 
 // /**
 //  * Spector JS
@@ -64,8 +66,28 @@ const Page: FC = () => {
     const bakedMaterial = new THREE.MeshBasicMaterial({ map: bakedTexture });
 
     // Portal light material
-    const portalLightMaterial = new THREE.MeshBasicMaterial({
-      color: 0xffffff,
+    const portalLightMaterial = new THREE.ShaderMaterial({
+      uniforms: {
+        uTime: { value: 0 },
+        uColorStart: { value: new THREE.Color(0x000000) },
+        uColorEnd: { value: new THREE.Color(0xffffff) },
+      },
+
+      vertexShader: portalVertexShader,
+      fragmentShader: portalFragmentShader,
+    });
+
+    debugObject.portalColorStart = '#000000';
+    debugObject.portalColorEnd = '#ffffff';
+    gui.addColor(debugObject, 'portalColorStart').onChange(() => {
+      portalLightMaterial.uniforms.uColorStart.value.set(
+        debugObject.portalColorStart,
+      );
+    });
+    gui.addColor(debugObject, 'portalColorEnd').onChange(() => {
+      portalLightMaterial.uniforms.uColorEnd.value.set(
+        debugObject.portalColorEnd,
+      );
     });
 
     // Pole light material
@@ -231,8 +253,9 @@ const Page: FC = () => {
     const tick = () => {
       const elapsedTime = clock.getElapsedTime();
 
-      // Update fireflies materials
+      // Update materials
       firefliesMaterial.uniforms.uTime.value = elapsedTime;
+      portalLightMaterial.uniforms.uTime.value = elapsedTime;
 
       // Update controls
       controls.update();
