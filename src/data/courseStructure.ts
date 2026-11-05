@@ -166,6 +166,18 @@ export const courseStructure: Chapter[] = [
       },
     ],
   },
+  {
+    id: 'chapter7',
+    title: 'Chapter 7: React Three Fiber',
+    path: '/chapter7-react-three-fiber',
+    lessons: [
+      {
+        id: '55',
+        title: 'First R3F Application',
+        path: '/55-first-r3f-application',
+      },
+    ],
+  },
 ];
 
 export type { Lesson, Chapter };
