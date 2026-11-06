@@ -176,6 +176,11 @@ export const courseStructure: Chapter[] = [
         title: 'First R3F Application',
         path: '/55-first-r3f-application',
       },
+      {
+        id: '56',
+        title: 'Drei',
+        path: '/56-drei',
+      },
     ],
   },
 ];
