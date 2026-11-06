@@ -22,32 +22,37 @@ export default function Experience() {
     if (cubeRef.current) {
       // rotate the cube on each frame
       // use delta to make the rotation independent of the frame rate
-      cubeRef.current.rotation.y += delta * 0.2;
+      cubeRef.current.rotation.y += delta;
     }
   });
   return <>
   {/* order not relevant */}
     <orbitControls args={[camera, gl.domElement]} />
 
-    <directionalLight position={[1, 2, 3]} intensity={ 4.5 } />
+    <directionalLight
+      position={[1, 2, 3]}
+      intensity={4.5}
+      castShadow
+      shadow-mapSize={[1024, 1024]}
+    />
     <ambientLight intensity={ 1.5 } />
 
     <group ref={groupRef}>
-      <mesh position-x={ -2 }>
+      <mesh position-x={ -2 } castShadow receiveShadow>
         {/* parameters for sphereGeometry: radius, widthSegments, heightSegments */}
         <sphereGeometry />
-        <meshBasicMaterial color="orange" />
+        <meshStandardMaterial color="orange" />
       </mesh>
 
-      <mesh ref={cubeRef} scale={1.5} position-x={2} rotation-y={Math.PI * 0.25}>
+      <mesh ref={cubeRef} scale={1.5} position-x={2} rotation-y={Math.PI * 0.25} castShadow receiveShadow>
         <boxGeometry />
-        <meshBasicMaterial color="mediumpurple" wireframe={false} />
+        <meshStandardMaterial color="mediumpurple" wireframe={false} />
       </mesh>
     </group>
 
-    <mesh position-y={-1} rotation-x={-Math.PI * 0.5} scale={10}>
+    <mesh position-y={-1} rotation-x={-Math.PI * 0.5} scale={10} receiveShadow>
       <planeGeometry />
-      <meshBasicMaterial color="greenyellow" />
+      <meshStandardMaterial color="greenyellow" />
     </mesh>
 
     <CustomObject />

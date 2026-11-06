@@ -19,6 +19,8 @@ const Page: FC = () => {
     <div className='r3f-root'>
       {/* canvas setting */}
       <Canvas
+        shadows
+        dpr={ [ 1, 2 ] }
         camera={{
           fov: 45,
           near: 0.1,
