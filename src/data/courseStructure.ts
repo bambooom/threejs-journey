@@ -183,6 +183,18 @@ export const courseStructure: Chapter[] = [
       },
     ],
   },
+  {
+    id: 'webgpu-tsl',
+    title: 'WebGPU and TSL',
+    path: '/webgpu-tsl',
+    lessons: [
+      {
+        id: '02',
+        title: 'Node Materials',
+        path:'/02-node-materials',
+      },
+    ],
+  }
 ];
 
 export type { Lesson, Chapter };
