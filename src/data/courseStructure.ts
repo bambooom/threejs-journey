@@ -203,6 +203,11 @@ export const courseStructure: Chapter[] = [
         title: 'Variables & References',
         path:'/03-variables-and-references',
       },
+      {
+        id: '04',
+        title: 'Tools & debug',
+        path:'/04-tools-and-debug',
+      },
     ],
   }
 ];
