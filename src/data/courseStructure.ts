@@ -198,6 +198,11 @@ export const courseStructure: Chapter[] = [
         title: 'Node Materials',
         path:'/02-node-materials',
       },
+      {
+        id: '03',
+        title: 'Variables & References',
+        path:'/03-variables-and-references',
+      },
     ],
   }
 ];
