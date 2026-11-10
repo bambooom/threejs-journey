@@ -189,7 +189,7 @@ const Page: FC = () => {
     };
   }, []);
 
-  return <canvas className="webgl" ref={canvas}></canvas>;
+  return <canvas className="webgpu" ref={canvas}></canvas>;
 };
 
 export default Page;
