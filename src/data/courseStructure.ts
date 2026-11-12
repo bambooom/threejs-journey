@@ -218,6 +218,11 @@ export const courseStructure: Chapter[] = [
         title: 'Textures',
         path:'/06-textures',
       },
+      {
+        id: '07',
+        title: 'Uniforms & Attributes',
+        path:'/07-uniforms-and-attributes',
+      },
     ],
   }
 ];
