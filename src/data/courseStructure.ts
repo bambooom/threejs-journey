@@ -213,6 +213,11 @@ export const courseStructure: Chapter[] = [
         title: 'Math',
         path:'/05-math',
       },
+      {
+        id: '06',
+        title: 'Textures',
+        path:'/06-textures',
+      },
     ],
   }
 ];

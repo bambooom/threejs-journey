@@ -2,8 +2,6 @@ import { type FC, useRef, useEffect } from 'react';
 import * as THREE from 'three/webgpu'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { hash, mx_noise_float, mx_noise_vec3, positionLocal, positionWorld, rand, rotate, time, uv, vec2, vec3 } from 'three/tsl';
-import { Inspector } from 'three/examples/jsm/inspector/Inspector.js';
-// import TSLGraphEditor from 'three/addons/inspector/extensions/tsl-graph/TSLGraphEditor.js'
 
 const Page: FC = () => {
   // Canvas
@@ -56,7 +54,6 @@ const Page: FC = () => {
     renderer.setSize(sizes.width, sizes.height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setClearColor(0x111111);
-    renderer.inspector = new Inspector()
 
     const onResize = () => {
       sizes.width = window.innerWidth;
