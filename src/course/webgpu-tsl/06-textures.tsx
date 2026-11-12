@@ -3,7 +3,7 @@ import * as THREE from 'three/webgpu'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { TransformControls } from 'three/addons/controls/TransformControls.js'
 import { Inspector } from 'three/addons/inspector/Inspector.js'
-import { blendColor, blendDodge, float, grayscale, hue, materialColor, mix, normalLocal, oscSine, positionLocal, rotateUV, saturation, texture, time, triplanarTexture, uv, vec2, vec4, vibrance } from 'three/tsl'
+import { blendColor, blendDodge, float, grayscale, hue, materialColor, mix, normalLocal, oscSine, positionLocal, rotateUV, saturate, saturation, texture, time, triplanarTexture, uv, vec2, vec4, vibrance } from 'three/tsl'
 
 const Page: FC = () => {
   // Canvas
@@ -131,6 +131,8 @@ const Page: FC = () => {
 
       // saturate color, 色彩饱和度
       // material.colorNode = saturation(texture(uvChecker).rgb, oscillation.mul(2))
+      // saturate() simply clamps the input in the [0, 1] range
+
 
       // grayscale different with saturation=0
       // material.colorNode = grayscale(texture(uvChecker).rgb)
