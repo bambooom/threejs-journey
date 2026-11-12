@@ -208,6 +208,11 @@ export const courseStructure: Chapter[] = [
         title: 'Tools & debug',
         path:'/04-tools-and-debug',
       },
+      {
+        id: '05',
+        title: 'Math',
+        path:'/05-math',
+      },
     ],
   }
 ];
