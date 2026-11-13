@@ -186,6 +186,11 @@ export const courseStructure: Chapter[] = [
         title: 'Debug R3F Application',
         path: '/57-debug-r3f-application',
       },
+      {
+        id: '58',
+        title: 'Environment and Staging',
+        path: '/58-environment-and-staging-with-r3f',
+      },
     ],
   },
   {
