@@ -228,6 +228,11 @@ export const courseStructure: Chapter[] = [
         title: 'Uniforms & Attributes',
         path:'/07-uniforms-and-attributes',
       },
+      {
+        id: '08',
+        title: 'Node Functions',
+        path:'/08-node-functions',
+      },
     ],
   }
 ];
