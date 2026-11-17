@@ -191,6 +191,11 @@ export const courseStructure: Chapter[] = [
         title: 'Environment and Staging',
         path: '/58-environment-and-staging-with-r3f',
       },
+      {
+        id: '59',
+        title: 'Load models',
+        path: '/59-load-models-with-r3f',
+      },
     ],
   },
   {

@@ -65,6 +65,9 @@ importers:
       three-custom-shader-material:
         specifier: ^6.4.0
         version: 6.4.0(@react-three/fiber@9.8.2(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(three@0.187.0))(react@19.3.1)(three@0.187.0)
+      three-stdlib:
+        specifier: ^2.36.1
+        version: 2.36.1(three@0.187.0)
     devDependencies:
       '@eslint/js':
         specifier: ^10.0.1
