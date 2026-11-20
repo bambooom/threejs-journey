@@ -238,6 +238,11 @@ export const courseStructure: Chapter[] = [
         title: 'Node Functions',
         path:'/08-node-functions',
       },
+      {
+        id: '09',
+        title: 'Patterns',
+        path:'/09-patterns',
+      },
     ],
   }
 ];
