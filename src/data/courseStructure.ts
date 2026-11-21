@@ -196,6 +196,11 @@ export const courseStructure: Chapter[] = [
         title: 'Load models',
         path: '/59-load-models-with-r3f',
       },
+      {
+        id: '60',
+        title: '3D Text',
+        path: '/60-3d-text-with-r3f',
+      },
     ],
   },
   {
