@@ -248,6 +248,11 @@ export const courseStructure: Chapter[] = [
         title: 'Patterns',
         path:'/09-patterns',
       },
+      {
+        id: '10',
+        title: 'Coffee smoke',
+        path:'/10-coffee-smoke',
+      },
     ],
   }
 ];
