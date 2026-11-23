@@ -201,6 +201,11 @@ export const courseStructure: Chapter[] = [
         title: '3D Text',
         path: '/60-3d-text-with-r3f',
       },
+      {
+        id: '61',
+        title: 'Portal Scene',
+        path: '/61-portal-scene-with-r3f',
+      },
     ],
   },
   {
