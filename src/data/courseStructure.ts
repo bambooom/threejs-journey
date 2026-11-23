@@ -206,6 +206,11 @@ export const courseStructure: Chapter[] = [
         title: 'Portal Scene',
         path: '/61-portal-scene-with-r3f',
       },
+      {
+        id: '62',
+        title: 'Mouse Events',
+        path: '/62-mouse-events-with-r3f',
+      },
     ],
   },
   {
