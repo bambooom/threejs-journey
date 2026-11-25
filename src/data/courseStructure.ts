@@ -211,6 +211,11 @@ export const courseStructure: Chapter[] = [
         title: 'Mouse Events',
         path: '/62-mouse-events-with-r3f',
       },
+      {
+        id: '63',
+        title: 'Post-processing',
+        path: '/63-post-processing-with-r3f',
+      },
     ],
   },
   {

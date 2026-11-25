@@ -12,6 +12,7 @@
   "dependencies": {
     "@react-three/drei": "^10.7.9",
     "@react-three/fiber": "^9.8.2",
+    "@react-three/postprocessing": "^3.2.2",
     "@types/react-syntax-highlighter": "^15.5.13",
     "@vercel/analytics": "^2.0.1",
     "cannon-es": "^0.20.0",
@@ -19,6 +20,7 @@
     "gsap": "^3.15.1",
     "leva": "^0.10.1",
     "lil-gui": "^0.21.0",
+    "postprocessing": "^6.39.6",
     "r3f-perf": "^7.2.3",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
